@@ -6,7 +6,7 @@ import {
 } from 'n8n-workflow';
 
 export class SubstackApi implements ICredentialType {
-	name = 'substackApi';
+	name = 'substackGatewayApi';
 	displayName = 'SubstackGateway API';
 	documentationUrl = 'https://github.com/jakub-k-slys/n8n-nodes-substack';
 	properties: INodeProperties[] = [
