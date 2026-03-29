@@ -7,7 +7,7 @@
   "nodes": [
     {
       "name": "Get Own Profile",
-      "type": "n8n-nodes-substack-v2.substack",
+      "type": "n8n-nodes-substack-new.substack",
       "parameters": {
         "resource": "profile",
         "operation": "getOwnProfile"
@@ -27,7 +27,7 @@
   "nodes": [
     {
       "name": "Get Posts By Slug",
-      "type": "n8n-nodes-substack-v2.substack",
+      "type": "n8n-nodes-substack-new.substack",
       "parameters": {
         "resource": "post",
         "operation": "getPostsBySlug",
@@ -49,7 +49,7 @@
   "nodes": [
     {
       "name": "Create Note",
-      "type": "n8n-nodes-substack-v2.substack",
+      "type": "n8n-nodes-substack-new.substack",
       "parameters": {
         "resource": "note",
         "operation": "create",
@@ -73,7 +73,7 @@
   "nodes": [
     {
       "name": "Get Comments",
-      "type": "n8n-nodes-substack-v2.substack",
+      "type": "n8n-nodes-substack-new.substack",
       "parameters": {
         "resource": "comment",
         "operation": "getAll",
@@ -91,7 +91,7 @@
 ## Client: Read Notes By Slug
 
 ```ts
-import { SubstackClient } from 'n8n-nodes-substack-v2';
+import { SubstackClient } from 'n8n-nodes-substack-new';
 
 const client = new SubstackClient({
   publicationUrl: 'https://myblog.substack.com',

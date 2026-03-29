@@ -5,10 +5,10 @@
 Install the package where n8n can load community nodes:
 
 ```bash
-npm install n8n-nodes-substack-v2
+npm install n8n-nodes-substack-new
 ```
 
-If you are using n8n's community package UI, install `n8n-nodes-substack-v2` there and restart n8n afterward.
+If you are using n8n's community package UI, install `n8n-nodes-substack-new` there and restart n8n afterward.
 
 ## Requirements
 

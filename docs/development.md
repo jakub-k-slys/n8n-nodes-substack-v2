@@ -18,13 +18,13 @@ pnpm run dev
 ## Main Source Areas
 
 - Node implementation:
-  - [`nodes/SubstackGateway`](/Users/jakubslys/n8n-nodes-substack-v2/nodes/SubstackGateway)
+  - [`nodes/SubstackGateway`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway)
 - Credentials:
-  - [`credentials/SubstackGatewayApi.credentials.ts`](/Users/jakubslys/n8n-nodes-substack-v2/credentials/SubstackGatewayApi.credentials.ts)
+  - [`credentials/SubstackGatewayApi.credentials.ts`](/Users/jakubslys/n8n-nodes-substack-new/credentials/SubstackGatewayApi.credentials.ts)
 - Package entrypoint:
-  - [`index.ts`](/Users/jakubslys/n8n-nodes-substack-v2/index.ts)
+  - [`index.ts`](/Users/jakubslys/n8n-nodes-substack-new/index.ts)
 - Tests:
-  - [`tests/unit`](/Users/jakubslys/n8n-nodes-substack-v2/tests/unit)
+  - [`tests/unit`](/Users/jakubslys/n8n-nodes-substack-new/tests/unit)
 
 ## Adding A New Operation
 

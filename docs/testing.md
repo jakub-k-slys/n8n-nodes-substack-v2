@@ -32,9 +32,9 @@ The tests do not call a live gateway. They mock the client returned by `Substack
 
 Main helpers:
 
-- [`tests/mocks/mockSubstackClient.ts`](/Users/jakubslys/n8n-nodes-substack-v2/tests/mocks/mockSubstackClient.ts)
-- [`tests/mocks/mockExecuteFunctions.ts`](/Users/jakubslys/n8n-nodes-substack-v2/tests/mocks/mockExecuteFunctions.ts)
-- [`tests/utils/testSetup.ts`](/Users/jakubslys/n8n-nodes-substack-v2/tests/utils/testSetup.ts)
+- [`tests/mocks/mockSubstackClient.ts`](/Users/jakubslys/n8n-nodes-substack-new/tests/mocks/mockSubstackClient.ts)
+- [`tests/mocks/mockExecuteFunctions.ts`](/Users/jakubslys/n8n-nodes-substack-new/tests/mocks/mockExecuteFunctions.ts)
+- [`tests/utils/testSetup.ts`](/Users/jakubslys/n8n-nodes-substack-new/tests/utils/testSetup.ts)
 
 ## Before Merging
 

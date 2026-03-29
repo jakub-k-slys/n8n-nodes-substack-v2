@@ -3,7 +3,7 @@
 ## 1. Install The Package
 
 ```bash
-npm install n8n-nodes-substack-v2
+npm install n8n-nodes-substack-new
 ```
 
 Restart n8n after installation.
@@ -51,7 +51,7 @@ This creates a note through the gateway and returns:
 ## 6. Try Direct Client Usage
 
 ```ts
-import { SubstackClient } from 'n8n-nodes-substack-v2';
+import { SubstackClient } from 'n8n-nodes-substack-new';
 
 const client = new SubstackClient({
   publicationUrl: 'https://your-publication.substack.com',

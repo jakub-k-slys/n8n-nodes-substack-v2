@@ -3,7 +3,7 @@
 This package exports `SubstackClient` for direct usage outside n8n.
 
 ```ts
-import { SubstackClient } from 'n8n-nodes-substack-v2';
+import { SubstackClient } from 'n8n-nodes-substack-new';
 ```
 
 ## Constructor

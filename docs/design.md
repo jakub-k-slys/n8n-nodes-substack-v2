@@ -6,10 +6,10 @@ The package is organized around the `Substack Gateway` n8n node plus a shared cl
 
 Key paths:
 
-- [`nodes/SubstackGateway/Substack.node.ts`](/Users/jakubslys/n8n-nodes-substack-v2/nodes/SubstackGateway/Substack.node.ts)
-- [`nodes/SubstackGateway/SubstackUtils.ts`](/Users/jakubslys/n8n-nodes-substack-v2/nodes/SubstackGateway/SubstackUtils.ts)
-- [`nodes/SubstackGateway/shared/SubstackGatewayClient.ts`](/Users/jakubslys/n8n-nodes-substack-v2/nodes/SubstackGateway/shared/SubstackGatewayClient.ts)
-- [`nodes/SubstackGateway/shared/DataFormatters.ts`](/Users/jakubslys/n8n-nodes-substack-v2/nodes/SubstackGateway/shared/DataFormatters.ts)
+- [`nodes/SubstackGateway/Substack.node.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/Substack.node.ts)
+- [`nodes/SubstackGateway/SubstackUtils.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/SubstackUtils.ts)
+- [`nodes/SubstackGateway/shared/SubstackGatewayClient.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/shared/SubstackGatewayClient.ts)
+- [`nodes/SubstackGateway/shared/DataFormatters.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/shared/DataFormatters.ts)
 
 ## Node Layer
 
@@ -55,7 +55,7 @@ Transforms raw client objects into the node's output shapes.
 - Gateway HTTP transport via `axios`
 - Request throttling via `axios-rate-limit`
 - Profile, note, post, and comment iteration helpers
-- A small public typed API re-exported from [`index.ts`](/Users/jakubslys/n8n-nodes-substack-v2/index.ts)
+- A small public typed API re-exported from [`index.ts`](/Users/jakubslys/n8n-nodes-substack-new/index.ts)
 
 ## Build Output
 

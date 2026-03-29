@@ -1,14 +1,14 @@
-# n8n-nodes-substack-v2
+# n8n-nodes-substack-new
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://github.com/jakub-k-slys/n8n-nodes-substack-v2/actions/workflows/test.yaml/badge.svg)](https://github.com/jakub-k-slys/n8n-nodes-substack-v2/actions/workflows/test.yaml)
+[![Tests](https://github.com/jakub-k-slys/n8n-nodes-substack-new/actions/workflows/test.yaml/badge.svg)](https://github.com/jakub-k-slys/n8n-nodes-substack-new/actions/workflows/test.yaml)
 
-`n8n-nodes-substack-v2` is an n8n community package for working with Substack through a gateway-backed client. It ships two related surfaces:
+`n8n-nodes-substack-new` is an n8n community package for working with Substack through a gateway-backed client. It ships two related surfaces:
 
 - The `Substack Gateway` n8n node for workflows
 - A small typed `SubstackClient` exported from the package for direct programmatic use
 
-This repository no longer wraps a separate `substack-api` package. The client implementation lives in this codebase under [`nodes/SubstackGateway/shared/SubstackGatewayClient.ts`](/Users/jakubslys/n8n-nodes-substack-v2/nodes/SubstackGateway/shared/SubstackGatewayClient.ts).
+This repository no longer wraps a separate `substack-api` package. The client implementation lives in this codebase under [`nodes/SubstackGateway/shared/SubstackGatewayClient.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/shared/SubstackGatewayClient.ts).
 
 ## What It Supports
 
@@ -33,10 +33,10 @@ This repository no longer wraps a separate `substack-api` package. The client im
 Install the package into your n8n environment:
 
 ```bash
-npm install n8n-nodes-substack-v2
+npm install n8n-nodes-substack-new
 ```
 
-Then restart n8n and install `n8n-nodes-substack-v2` as a community package if needed by your deployment model.
+Then restart n8n and install `n8n-nodes-substack-new` as a community package if needed by your deployment model.
 
 ## Credentials
 
@@ -59,7 +59,7 @@ List recent posts from your own publication:
   "nodes": [
     {
       "name": "Get Recent Posts",
-      "type": "n8n-nodes-substack-v2.substack",
+      "type": "n8n-nodes-substack-new.substack",
       "parameters": {
         "resource": "post",
         "operation": "getAll",
@@ -80,7 +80,7 @@ Create a note:
   "nodes": [
     {
       "name": "Create Note",
-      "type": "n8n-nodes-substack-v2.substack",
+      "type": "n8n-nodes-substack-new.substack",
       "parameters": {
         "resource": "note",
         "operation": "create",
@@ -101,7 +101,7 @@ Create a note:
 The package also exports a typed client:
 
 ```ts
-import { SubstackClient } from 'n8n-nodes-substack-v2';
+import { SubstackClient } from 'n8n-nodes-substack-new';
 
 const client = new SubstackClient({
   publicationUrl: 'https://myblog.substack.com',

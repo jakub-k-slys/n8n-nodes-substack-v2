@@ -1,6 +1,6 @@
 # Introduction
 
-`n8n-nodes-substack-v2` provides a gateway-backed Substack integration for n8n and a small TypeScript client for direct usage.
+`n8n-nodes-substack-new` provides a gateway-backed Substack integration for n8n and a small TypeScript client for direct usage.
 
 ## Current Scope
 
@@ -19,7 +19,7 @@ It does not currently implement post creation, post likes, or comment creation.
 
 ### n8n Node
 
-The n8n node is exposed as `Substack Gateway` and is implemented in [`nodes/SubstackGateway/Substack.node.ts`](/Users/jakubslys/n8n-nodes-substack-v2/nodes/SubstackGateway/Substack.node.ts).
+The n8n node is exposed as `Substack Gateway` and is implemented in [`nodes/SubstackGateway/Substack.node.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/Substack.node.ts).
 
 Resources:
 
@@ -30,9 +30,9 @@ Resources:
 
 ### TypeScript Client
 
-The package entrypoint re-exports `SubstackClient` from [`index.ts`](/Users/jakubslys/n8n-nodes-substack-v2/index.ts).
+The package entrypoint re-exports `SubstackClient` from [`index.ts`](/Users/jakubslys/n8n-nodes-substack-new/index.ts).
 
-The client implementation lives in [`nodes/SubstackGateway/shared/SubstackGatewayClient.ts`](/Users/jakubslys/n8n-nodes-substack-v2/nodes/SubstackGateway/shared/SubstackGatewayClient.ts).
+The client implementation lives in [`nodes/SubstackGateway/shared/SubstackGatewayClient.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/shared/SubstackGatewayClient.ts).
 
 ## Authentication Model
 

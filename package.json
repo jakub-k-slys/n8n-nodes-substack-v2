@@ -1,5 +1,5 @@
 {
-  "name": "n8n-nodes-substack-v2",
+  "name": "n8n-nodes-substack-new",
   "version": "0.0.1",
   "description": "n8n community node for Substack API integration",
   "keywords": [
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jakub-k-slys/n8n-nodes-substack-v2.git"
+    "url": "git+https://github.com/jakub-k-slys/n8n-nodes-substack-new.git"
   },
   "engines": {
     "node": ">=20.15"
