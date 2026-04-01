@@ -17,9 +17,16 @@
 		"resolveJsonModule": true,
 		"incremental": true,
 		"declaration": true,
+		"allowJs": true,
 		"sourceMap": true,
 		"skipLibCheck": true,
 		"outDir": "./dist/"
 	},
-	"include": ["credentials/**/*", "nodes/**/*", "nodes/**/*.json", "package.json"]
+	"include": [
+		"index.ts",
+		"credentials/**/*",
+		"nodes/**/*",
+		"nodes/**/*.json",
+		"package.json"
+	]
 }

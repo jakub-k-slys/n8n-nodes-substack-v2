@@ -1,139 +1,46 @@
-# n8n-nodes-substack-new
+# n8n-nodes-substack-new-template
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://github.com/jakub-k-slys/n8n-nodes-substack-new/actions/workflows/test.yaml/badge.svg)](https://github.com/jakub-k-slys/n8n-nodes-substack-new/actions/workflows/test.yaml)
+This is an n8n community node. It lets you use _app/service name_ in your n8n workflows.
 
-`n8n-nodes-substack-new` is an n8n community package for working with Substack through a gateway-backed client. It ships two related surfaces:
+_App/service name_ is _one or two sentences describing the service this node integrates with_.
 
-- The `Substack Gateway` n8n node for workflows
-- A small typed `SubstackClient` exported from the package for direct programmatic use
+[n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/sustainable-use-license/) workflow automation platform.
 
-This repository no longer wraps a separate `substack-api` package. The client implementation lives in this codebase under [`nodes/SubstackGateway/shared/SubstackGatewayClient.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/shared/SubstackGatewayClient.ts).
-
-## What It Supports
-
-- Profile operations
-  - Get your own profile
-  - Get a profile by publication slug
-  - List followed profiles or followed user IDs
-- Post operations
-  - List posts from your own publication
-  - List posts from another publication by slug
-  - Fetch a post by ID
-- Note operations
-  - List notes from your own publication
-  - List notes from another publication by slug
-  - Fetch a note by ID
-  - Create a note with optional attached link
-- Comment operations
-  - List comments for a post by ID
+[Installation](#installation)
+[Operations](#operations)
+[Credentials](#credentials)
+[Compatibility](#compatibility)
+[Usage](#usage)
+[Resources](#resources)
+[Version history](#version-history)
 
 ## Installation
 
-Install the package into your n8n environment:
+Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
 
-```bash
-npm install n8n-nodes-substack-new
-```
+## Operations
 
-Then restart n8n and install `n8n-nodes-substack-new` as a community package if needed by your deployment model.
+_List the operations supported by your node._
 
 ## Credentials
 
-The node uses a credential named `SubstackGateway API` with three fields:
+_If users need to authenticate with the app/service, provide details here. You should include prerequisites (such as signing up with the service), available authentication methods, and how to set them up._
 
-- `Publication Address`
-  - Full publication URL such as `https://myblog.substack.com`
-- `Gateway URL`
-  - Optional gateway base URL
-  - Defaults to `https://substack-gateway.vercel.app`
-- `API Key`
-  - Bearer token expected by the gateway
+## Compatibility
 
-## Quick Example
+_State the minimum n8n version, as well as which versions you test against. You can also include any known version incompatibility issues._
 
-List recent posts from your own publication:
+## Usage
 
-```json
-{
-  "nodes": [
-    {
-      "name": "Get Recent Posts",
-      "type": "n8n-nodes-substack-new.substack",
-      "parameters": {
-        "resource": "post",
-        "operation": "getAll",
-        "limit": 10
-      },
-      "credentials": {
-        "substackApi": "your-credential-id"
-      }
-    }
-  ]
-}
-```
+_This is an optional section. Use it to help users with any difficult or confusing aspects of the node._
 
-Create a note:
+_By the time users are looking for community nodes, they probably already know n8n basics. But if you expect new users, you can link to the [Try it out](https://docs.n8n.io/try-it-out/) documentation to help them get started._
 
-```json
-{
-  "nodes": [
-    {
-      "name": "Create Note",
-      "type": "n8n-nodes-substack-new.substack",
-      "parameters": {
-        "resource": "note",
-        "operation": "create",
-        "body": "Published from n8n",
-        "visibility": "everyone",
-        "attachment": "none"
-      },
-      "credentials": {
-        "substackApi": "your-credential-id"
-      }
-    }
-  ]
-}
-```
+## Resources
 
-## Direct Client Usage
+* [n8n community nodes documentation](https://docs.n8n.io/integrations/#community-nodes)
+* _Link to app/service documentation._
 
-The package also exports a typed client:
+## Version history
 
-```ts
-import { SubstackClient } from 'n8n-nodes-substack-new';
-
-const client = new SubstackClient({
-  publicationUrl: 'https://myblog.substack.com',
-  token: process.env.SUBSTACK_GATEWAY_TOKEN!,
-});
-
-const ownProfile = await client.ownProfile();
-
-for await (const post of ownProfile.posts()) {
-  console.log(post.title);
-}
-```
-
-## Documentation
-
-- [Introduction](docs/introduction.md)
-- [Installation](docs/installation.md)
-- [Quickstart](docs/quickstart.md)
-- [n8n Usage](docs/n8n-usage.md)
-- [API Reference](docs/api-reference.md)
-- [Examples](docs/examples.md)
-- [Architecture](docs/design.md)
-- [Development](docs/development.md)
-- [Testing](docs/testing.md)
-
-Resource-specific docs:
-
-- [Profiles](docs/resources/profile.md)
-- [Posts](docs/resources/post.md)
-- [Notes](docs/resources/note.md)
-- [Comments](docs/resources/comment.md)
-
-## License
-
-[MIT](LICENSE.md)
+_This is another optional section. If your node has multiple versions, include a short description of available versions and what changed, as well as any compatibility impact._
