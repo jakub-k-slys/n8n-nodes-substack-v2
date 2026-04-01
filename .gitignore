@@ -12,4 +12,7 @@ yarn.lock
 
 # n8n development files
 .n8n/
+.n8n-node-dev/
+.dev-package/
+.pnpm-store/
 n8n-data/
