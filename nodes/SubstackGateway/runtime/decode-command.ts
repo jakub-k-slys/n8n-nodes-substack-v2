@@ -3,11 +3,13 @@ import type { IExecuteFunctions } from 'n8n-workflow';
 
 import type { GatewayCommand } from '../domain/command';
 import type { GatewayError } from '../domain/error';
+import type { GatewayResource } from '../domain/operation';
 import { decodeDraftCommand } from './decode/draft';
 import { decodeNoteCommand } from './decode/note';
 import { decodeOwnPublicationCommand } from './decode/own-publication';
 import { decodePostCommand } from './decode/post';
 import { decodeProfileCommand } from './decode/profile';
+import { decodeGatewayOperation } from './decode-operation';
 
 export const decodeGatewayCommand = (
 	context: IExecuteFunctions,
@@ -15,7 +17,7 @@ export const decodeGatewayCommand = (
 ): Effect.Effect<GatewayCommand, GatewayError> =>
 	Effect.try({
 		try: () => ({
-			resource: context.getNodeParameter('resource', itemIndex) as string,
+			resource: context.getNodeParameter('resource', itemIndex) as GatewayResource,
 			operation: context.getNodeParameter('operation', itemIndex) as string,
 		}),
 		catch: (cause) =>
@@ -26,45 +28,40 @@ export const decodeGatewayCommand = (
 			}) satisfies GatewayError,
 	}).pipe(
 		Effect.flatMap(({ resource, operation }) => {
-			const decoded: Either.Either<GatewayCommand | undefined, GatewayError> = Match.value(
-				resource,
-			).pipe(
-				Match.when('ownPublication', () =>
-					Either.map(decodeOwnPublicationCommand(operation), (command) =>
-						command === undefined ? undefined : ({ _tag: 'OwnPublication', command } as const),
+			return Either.flatMap(decodeGatewayOperation(resource, operation), (decodedOperation) =>
+				Match.value(decodedOperation).pipe(
+					Match.when({ _tag: 'OwnPublication' }, ({ operation }) =>
+						Either.right({
+							_tag: 'OwnPublication',
+							command: decodeOwnPublicationCommand(operation),
+						} as const),
 					),
-				),
-				Match.when('note', () =>
-					Either.map(decodeNoteCommand(context, itemIndex, operation), (command) =>
-						command === undefined ? undefined : ({ _tag: 'Note', command } as const),
+					Match.when({ _tag: 'Note' }, ({ operation }) =>
+						Either.map(decodeNoteCommand(context, itemIndex, operation), (command) => ({
+							_tag: 'Note',
+							command,
+						} as const)),
 					),
-				),
-				Match.when('draft', () =>
-					Either.map(decodeDraftCommand(context, itemIndex, operation), (command) =>
-						command === undefined ? undefined : ({ _tag: 'Draft', command } as const),
+					Match.when({ _tag: 'Draft' }, ({ operation }) =>
+						Either.map(decodeDraftCommand(context, itemIndex, operation), (command) => ({
+							_tag: 'Draft',
+							command,
+						} as const)),
 					),
-				),
-				Match.when('post', () =>
-					Either.map(decodePostCommand(context, itemIndex, operation), (command) =>
-						command === undefined ? undefined : ({ _tag: 'Post', command } as const),
+					Match.when({ _tag: 'Post' }, ({ operation }) =>
+						Either.map(decodePostCommand(context, itemIndex, operation), (command) => ({
+							_tag: 'Post',
+							command,
+						} as const)),
 					),
-				),
-				Match.when('profile', () =>
-					Either.map(decodeProfileCommand(context, itemIndex, operation), (command) =>
-						command === undefined ? undefined : ({ _tag: 'Profile', command } as const),
+					Match.when({ _tag: 'Profile' }, ({ operation }) =>
+						Either.map(decodeProfileCommand(context, itemIndex, operation), (command) => ({
+							_tag: 'Profile',
+							command,
+						} as const)),
 					),
+					Match.exhaustive,
 				),
-				Match.orElse(() => Either.right(undefined)),
-			);
-
-			return Either.flatMap(decoded, (command) =>
-				command !== undefined
-					? Either.right(command)
-					: Either.left({
-							_tag: 'UnsupportedOperation',
-							resource,
-							operation,
-						} satisfies GatewayError),
 			);
 		}),
 	);

@@ -3,6 +3,7 @@ import type { IExecuteFunctions } from 'n8n-workflow';
 
 import type { NoteCommand } from '../../domain/command';
 import type { GatewayError } from '../../domain/error';
+import type { NoteOperation } from '../../domain/operation';
 import { CreateNoteInputSchema, NoteIdInputSchema } from '../../schema';
 import { getOptionalString } from '../params';
 import { decodeInput } from './shared';
@@ -10,8 +11,8 @@ import { decodeInput } from './shared';
 export const decodeNoteCommand = (
 	context: IExecuteFunctions,
 	itemIndex: number,
-	operation: string,
-): Either.Either<NoteCommand | undefined, GatewayError> =>
+	operation: NoteOperation,
+): Either.Either<NoteCommand, GatewayError> =>
 	Match.value(operation).pipe(
 		Match.when('createNote', () =>
 			Either.map(
@@ -38,5 +39,5 @@ export const decodeNoteCommand = (
 				(input) => ({ _tag: 'Delete', ...input }) as const,
 			),
 		),
-		Match.orElse(() => Either.right(undefined)),
+		Match.exhaustive,
 	);

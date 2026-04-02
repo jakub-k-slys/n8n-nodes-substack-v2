@@ -3,6 +3,7 @@ import type { IExecuteFunctions } from 'n8n-workflow';
 
 import type { ProfileCommand } from '../../domain/command';
 import type { GatewayError } from '../../domain/error';
+import type { ProfileOperation } from '../../domain/operation';
 import {
 	ProfileNotesInputSchema,
 	ProfilePostsInputSchema,
@@ -14,8 +15,8 @@ import { decodeInput } from './shared';
 export const decodeProfileCommand = (
 	context: IExecuteFunctions,
 	itemIndex: number,
-	operation: string,
-): Either.Either<ProfileCommand | undefined, GatewayError> =>
+	operation: ProfileOperation,
+): Either.Either<ProfileCommand, GatewayError> =>
 	Match.value(operation).pipe(
 		Match.when('getProfile', () =>
 			Either.map(
@@ -44,5 +45,5 @@ export const decodeProfileCommand = (
 				(input) => ({ _tag: 'GetPosts', ...input }) as const,
 			),
 		),
-		Match.orElse(() => Either.right(undefined)),
+		Match.exhaustive,
 	);

@@ -3,14 +3,15 @@ import type { IExecuteFunctions } from 'n8n-workflow';
 
 import type { PostCommand } from '../../domain/command';
 import type { GatewayError } from '../../domain/error';
+import type { PostOperation } from '../../domain/operation';
 import { PostIdInputSchema } from '../../schema';
 import { decodeInput } from './shared';
 
 export const decodePostCommand = (
 	context: IExecuteFunctions,
 	itemIndex: number,
-	operation: string,
-): Either.Either<PostCommand | undefined, GatewayError> =>
+	operation: PostOperation,
+): Either.Either<PostCommand, GatewayError> =>
 	Match.value(operation).pipe(
 		Match.when('getPost', () =>
 			Either.map(
@@ -28,5 +29,5 @@ export const decodePostCommand = (
 				(input) => ({ _tag: 'GetComments', ...input }) as const,
 			),
 		),
-		Match.orElse(() => Either.right(undefined)),
+		Match.exhaustive,
 	);

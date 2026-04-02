@@ -3,6 +3,7 @@ import type { IExecuteFunctions } from 'n8n-workflow';
 
 import type { DraftCommand } from '../../domain/command';
 import type { GatewayError } from '../../domain/error';
+import type { DraftOperation } from '../../domain/operation';
 import { DraftFieldsInputSchema, DraftIdInputSchema, DraftWithIdInputSchema } from '../../schema';
 import { getDraftPayload } from '../params';
 import { decodeInput } from './shared';
@@ -10,8 +11,8 @@ import { decodeInput } from './shared';
 export const decodeDraftCommand = (
 	context: IExecuteFunctions,
 	itemIndex: number,
-	operation: string,
-): Either.Either<DraftCommand | undefined, GatewayError> =>
+	operation: DraftOperation,
+): Either.Either<DraftCommand, GatewayError> =>
 	Match.value(operation).pipe(
 		Match.when('listDrafts', () => Either.right({ _tag: 'List' } as const)),
 		Match.when('createDraft', () =>
@@ -45,5 +46,5 @@ export const decodeDraftCommand = (
 				(input) => ({ _tag: 'Delete', ...input }) as const,
 			),
 		),
-		Match.orElse(() => Either.right(undefined)),
+		Match.exhaustive,
 	);
