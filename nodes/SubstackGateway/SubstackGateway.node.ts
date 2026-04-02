@@ -6,20 +6,26 @@ import type {
 } from 'n8n-workflow';
 import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 
-export class Example implements INodeType {
+export class SubstackGateway implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Example',
-		name: 'example',
-		icon: { light: 'file:example.svg', dark: 'file:example.dark.svg' },
+		displayName: 'Substack Gateway',
+		name: 'substackGateway',
+		icon: { light: 'file:substackGateway.svg', dark: 'file:substackGateway.dark.svg' },
 		group: ['input'],
 		version: [1],
-		description: 'Basic Example Node',
+		description: 'Starter node for Substack Gateway integration',
 		defaults: {
-			name: 'Example',
+			name: 'Substack Gateway',
 		},
 		inputs: [NodeConnectionTypes.Main],
 		outputs: [NodeConnectionTypes.Main],
 		usableAsTool: true,
+		credentials: [
+			{
+				name: 'substackGatewayApi',
+				required: true,
+			},
+		],
 		properties: [
 			// Node properties which the user gets displayed and
 			// can change on the node.

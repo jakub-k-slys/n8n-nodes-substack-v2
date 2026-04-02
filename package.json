@@ -15,7 +15,7 @@
         "type": "git",
         "url": "https://github.com/<...>/n8n-nodes-<...>.git"
     },
-    "packageManager": "pnpm@10.32.1",
+    "packageManager": "pnpm@10.33.0",
     "scripts": {
         "build": "n8n-node build",
         "build:watch": "tsc --watch",
@@ -29,12 +29,14 @@
     "files": [
         "dist"
     ],
-    "n8n": {
+        "n8n": {
         "n8nNodesApiVersion": 1,
         "strict": true,
-        "credentials": [],
+        "credentials": [
+            "dist/credentials/SubstackGatewayApi.credentials.js"
+        ],
         "nodes": [
-            "dist/nodes/Example/Example.node.js"
+            "dist/nodes/SubstackGateway/SubstackGateway.node.js"
         ]
     },
     "devDependencies": {

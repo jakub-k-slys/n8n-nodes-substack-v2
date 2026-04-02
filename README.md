@@ -1,8 +1,8 @@
 # n8n-nodes-substack-new-template
 
-This is an n8n community node. It lets you use _app/service name_ in your n8n workflows.
+This is an n8n community node. It currently includes a starter `Substack Gateway` node for building the Substack integration.
 
-_App/service name_ is _one or two sentences describing the service this node integrates with_.
+The `Substack Gateway` node is a scaffold and should be extended with the actual Substack operations and credentials you plan to support.
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/sustainable-use-license/) workflow automation platform.
 
