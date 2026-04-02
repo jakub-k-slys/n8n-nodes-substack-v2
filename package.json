@@ -1,54 +1,54 @@
 {
-    "name": "n8n-nodes-substack-new-template",
-    "version": "0.1.0",
-    "description": "",
-    "license": "MIT",
-    "homepage": "",
-    "keywords": [
-        "n8n-community-node-package"
-    ],
-    "author": {
-        "name": "Jakub Slys",
-        "email": "jakub@slys.dev"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/<...>/n8n-nodes-<...>.git"
-    },
-    "packageManager": "pnpm@10.33.0",
-    "scripts": {
-        "build": "n8n-node build",
-        "build:watch": "tsc --watch",
-        "dev": "node scripts/dev.mjs",
-        "dev:prepare": "node scripts/prepare-dev-package.mjs",
-        "lint": "n8n-node lint",
-        "lint:fix": "n8n-node lint --fix",
-        "release": "n8n-node release",
-        "prepublishOnly": "n8n-node prerelease"
-    },
-    "files": [
-        "dist"
-    ],
-        "n8n": {
-        "n8nNodesApiVersion": 1,
-        "strict": true,
-        "credentials": [
-            "dist/credentials/SubstackGatewayApi.credentials.js"
-        ],
-        "nodes": [
-            "dist/nodes/SubstackGateway/SubstackGateway.node.js"
-        ]
-    },
-    "devDependencies": {
-        "@n8n/node-cli": "*",
-        "eslint": "9.32.0",
-        "n8n": "^2.14.2",
-        "prettier": "3.6.2",
-        "release-it": "^19.0.4",
-        "sqlite3": "^6.0.1",
-        "typescript": "5.9.2"
-    },
-    "peerDependencies": {
-        "n8n-workflow": "*"
-    }
+	"name": "n8n-nodes-substack-new-template",
+	"version": "0.1.0",
+	"description": "n8n community node for the Substack Gateway API",
+	"license": "MIT",
+	"homepage": "",
+	"keywords": [
+		"n8n-community-node-package"
+	],
+	"author": {
+		"name": "Jakub Slys",
+		"email": "jakub@slys.dev"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git@github.com:jakub-k-slys/n8n-nodes-substack-new.git"
+	},
+	"packageManager": "pnpm@10.33.0",
+	"scripts": {
+		"build": "n8n-node build",
+		"build:watch": "tsc --watch",
+		"dev": "node scripts/dev.mjs",
+		"dev:prepare": "node scripts/prepare-dev-package.mjs",
+		"lint": "n8n-node lint",
+		"lint:fix": "n8n-node lint --fix",
+		"release": "n8n-node release",
+		"prepublishOnly": "n8n-node prerelease"
+	},
+	"files": [
+		"dist"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"strict": true,
+		"credentials": [
+			"dist/credentials/SubstackGatewayApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/SubstackGateway/SubstackGateway.node.js"
+		]
+	},
+	"devDependencies": {
+		"@n8n/node-cli": "*",
+		"eslint": "9.32.0",
+		"n8n": "^2.14.2",
+		"prettier": "3.6.2",
+		"release-it": "^19.0.4",
+		"sqlite3": "^6.0.1",
+		"typescript": "5.9.2"
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	}
 }

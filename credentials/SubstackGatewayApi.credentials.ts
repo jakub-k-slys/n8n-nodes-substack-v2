@@ -8,7 +8,12 @@ import type {
 export class SubstackGatewayApi implements ICredentialType {
 	name = 'substackGatewayApi';
 
-	displayName = 'Substack Gateway API';
+	displayName = 'Substack Gateway';
+
+	icon = {
+		light: 'file:../nodes/SubstackGateway/substackGateway.svg',
+		dark: 'file:../nodes/SubstackGateway/substackGateway.dark.svg',
+	} as const;
 
 	documentationUrl = 'https://github.com/org/repo?tab=readme-ov-file#credentials';
 
