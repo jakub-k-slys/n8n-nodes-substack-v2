@@ -37,6 +37,7 @@ async function main() {
 		{
 			N8N_DEV_RELOAD: 'true',
 			N8N_USER_FOLDER: userFolder,
+			N8N_SECURE_COOKIE: 'false',
 			DB_SQLITE_POOL_SIZE: '10',
 		},
 	);
