@@ -6,6 +6,7 @@ import { buildGatewayRequest } from './build-request';
 import { decodeGatewayCommand } from './decode-command';
 import { decodeGatewayResponse } from './decode-response';
 import { executeGatewayRequest } from './execute-request';
+import { makeGatewayClientLayer } from './gateway-client';
 import { toNodeExecutionData } from './to-node-data';
 
 export const runGatewayOperation = (
@@ -14,12 +15,15 @@ export const runGatewayOperation = (
 	gatewayUrl: GatewayUrl,
 ): Promise<INodeExecutionData[]> =>
 	Effect.runPromise(
-		Effect.gen(function* () {
-			const command = yield* decodeGatewayCommand(context, itemIndex);
-			const request = buildGatewayRequest(gatewayUrl, command);
-			const rawResponse = yield* executeGatewayRequest(context, request);
-			const result = yield* decodeGatewayResponse(command, rawResponse);
+		Effect.provide(
+			Effect.gen(function* () {
+				const command = yield* decodeGatewayCommand(context, itemIndex);
+				const request = buildGatewayRequest(gatewayUrl, command);
+				const rawResponse = yield* executeGatewayRequest(request);
+				const result = yield* decodeGatewayResponse(command, rawResponse);
 
-			return toNodeExecutionData(itemIndex, result);
-		}),
+				return toNodeExecutionData(itemIndex, result);
+			}),
+			makeGatewayClientLayer(context),
+		),
 	);

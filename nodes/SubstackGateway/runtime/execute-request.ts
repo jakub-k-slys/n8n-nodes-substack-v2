@@ -1,42 +1,10 @@
 import { Effect } from 'effect';
-import type { IExecuteFunctions } from 'n8n-workflow';
 
 import type { GatewayError } from '../domain/error';
 import type { GatewayHttpRequest } from '../domain/http';
+import { GatewayClient } from './gateway-client';
 
 export const executeGatewayRequest = (
-	context: IExecuteFunctions,
 	request: GatewayHttpRequest,
-): Effect.Effect<unknown, GatewayError> =>
-	Effect.tryPromise({
-		try: async () => {
-			if (request.responseMode === 'empty') {
-				await context.helpers.httpRequestWithAuthentication.call(context, 'substackGatewayApi', {
-					json: true,
-					method: request.method,
-					url: request.url,
-					...(request.qs !== undefined ? { qs: request.qs } : {}),
-					...(request.body !== undefined ? { body: request.body } : {}),
-				});
-
-				return request.emptyResponseBody ?? {};
-			}
-
-			return await context.helpers.httpRequestWithAuthentication.call(
-				context,
-				'substackGatewayApi',
-				{
-					json: true,
-					method: request.method,
-					url: request.url,
-					...(request.qs !== undefined ? { qs: request.qs } : {}),
-					...(request.body !== undefined ? { body: request.body } : {}),
-				},
-			);
-		},
-		catch: (cause) => ({
-			_tag: 'ApiError',
-			message: cause instanceof Error ? cause.message : 'Gateway request failed',
-			cause,
-		}),
-	});
+): Effect.Effect<unknown, GatewayError, GatewayClient> =>
+	Effect.flatMap(GatewayClient, (client) => client.execute(request));
