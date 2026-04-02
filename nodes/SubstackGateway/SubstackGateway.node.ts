@@ -1,10 +1,47 @@
 import type {
+	IDataObject,
 	IExecuteFunctions,
 	INodeExecutionData,
+	INodeProperties,
 	INodeType,
 	INodeTypeDescription,
 } from 'n8n-workflow';
 import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
+
+const resourceOptions: INodeProperties = {
+	displayName: 'Resource',
+	name: 'resource',
+	type: 'options',
+	noDataExpression: true,
+	default: 'me',
+	options: [
+		{
+			name: 'Me',
+			value: 'me',
+		},
+	],
+};
+
+const meOperationOptions: INodeProperties = {
+	displayName: 'Operation',
+	name: 'operation',
+	type: 'options',
+	noDataExpression: true,
+	default: 'me',
+	displayOptions: {
+		show: {
+			resource: ['me'],
+		},
+	},
+	options: [
+		{
+			name: 'Me',
+			value: 'me',
+			action: 'Get my profile',
+			description: 'Get the authenticated user profile from Substack Gateway',
+		},
+	],
+};
 
 export class SubstackGateway implements INodeType {
 	description: INodeTypeDescription = {
@@ -13,7 +50,7 @@ export class SubstackGateway implements INodeType {
 		icon: { light: 'file:substackGateway.svg', dark: 'file:substackGateway.dark.svg' },
 		group: ['input'],
 		version: [1],
-		description: 'Starter node for Substack Gateway integration',
+		description: 'Interact with the Substack Gateway API',
 		defaults: {
 			name: 'Substack Gateway',
 		},
@@ -26,59 +63,65 @@ export class SubstackGateway implements INodeType {
 				required: true,
 			},
 		],
-		properties: [
-			// Node properties which the user gets displayed and
-			// can change on the node.
-			{
-				displayName: 'My String',
-				name: 'myString',
-				type: 'string',
-				default: '',
-				placeholder: 'Placeholder value',
-				description: 'The description text',
-			},
-		],
+		properties: [resourceOptions, meOperationOptions],
 	};
 
-	// The function below is responsible for actually doing whatever this node
-	// is supposed to do. In this case, we're just appending the `myString` property
-	// with whatever the user has entered.
-	// You can make async calls and use `await`.
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
+		const returnData: INodeExecutionData[] = [];
+		const credentials = await this.getCredentials('substackGatewayApi');
+		const gatewayUrl = String(credentials.gatewayUrl ?? '').replace(/\/+$/, '');
+		const gatewayToken = String(credentials.gatewayToken ?? '');
 
-		let item: INodeExecutionData;
-		let myString: string;
-
-		// Iterates over all input items and add the key "myString" with the
-		// value the parameter "myString" resolves to.
-		// (This could be a different value for each item in case it contains an expression)
 		for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
 			try {
-				myString = this.getNodeParameter('myString', itemIndex, '') as string;
-				item = items[itemIndex];
+				const resource = this.getNodeParameter('resource', itemIndex) as string;
+				const operation = this.getNodeParameter('operation', itemIndex) as string;
 
-				item.json.myString = myString;
-			} catch (error) {
-				// This node should never fail but we want to showcase how
-				// to handle errors.
-				if (this.continueOnFail()) {
-					items.push({ json: this.getInputData(itemIndex)[0].json, error, pairedItem: itemIndex });
-				} else {
-					// Adding `itemIndex` allows other workflows to handle this error
-					if (error.context) {
-						// If the error thrown already contains the context property,
-						// only append the itemIndex
-						error.context.itemIndex = itemIndex;
-						throw error;
-					}
-					throw new NodeOperationError(this.getNode(), error, {
-						itemIndex,
-					});
+				if (resource !== 'me' || operation !== 'me') {
+					throw new NodeOperationError(
+						this.getNode(),
+						`Unsupported resource/operation combination: ${resource}/${operation}`,
+						{ itemIndex },
+					);
 				}
+
+				const response = (await this.helpers.httpRequest({
+					method: 'GET',
+					url: `${gatewayUrl}/me`,
+					json: true,
+					headers: {
+						'x-gateway-token': gatewayToken,
+					},
+				})) as IDataObject;
+
+				returnData.push({
+					json: response,
+					pairedItem: { item: itemIndex },
+				});
+			} catch (error) {
+				if (this.continueOnFail()) {
+					returnData.push({
+						json: {
+							error: error instanceof Error ? error.message : 'Unknown error',
+						},
+						pairedItem: { item: itemIndex },
+					});
+					continue;
+				}
+
+				if (error instanceof NodeOperationError) {
+					throw error;
+				}
+
+				throw new NodeOperationError(
+					this.getNode(),
+					error instanceof Error ? error : new Error('Unknown error'),
+					{ itemIndex },
+				);
 			}
 		}
 
-		return [items];
+		return [returnData];
 	}
 }

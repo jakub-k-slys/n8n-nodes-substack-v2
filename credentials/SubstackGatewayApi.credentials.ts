@@ -18,8 +18,8 @@ export class SubstackGatewayApi implements ICredentialType {
 			name: 'gatewayUrl',
 			type: 'string',
 			required: true,
-			default: 'https://substack-gateway.vercel.app',
-			placeholder: 'https://substack-gateway.vercel.app',
+			default: 'https://substack-gateway.vercel.app/api/v1',
+			placeholder: 'https://substack-gateway.vercel.app/api/v1',
 		},
 		{
 			displayName: 'Gateway Token',
