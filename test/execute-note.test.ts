@@ -5,15 +5,8 @@ import * as HttpClient from '@effect/platform/HttpClient';
 import * as ClientResponse from '@effect/platform/HttpClientResponse';
 import { Effect } from 'effect';
 
+import { NodeInput } from '../dist/nodes/SubstackGateway/runtime/node-input.js';
 import { executeNoteOperation } from '../dist/nodes/SubstackGateway/runtime/resources/note/index.js';
-
-type TestContext = {
-	getNodeParameter: (name: string, itemIndex?: number, fallback?: unknown) => unknown;
-};
-
-const createContext = (parameters: Record<string, unknown>): TestContext => ({
-	getNodeParameter: (name, _itemIndex, fallback) => (name in parameters ? parameters[name] : fallback),
-});
 
 describe('executeNoteOperation', () => {
 	it('should execute a note-local pipeline', async () => {
@@ -21,14 +14,24 @@ describe('executeNoteOperation', () => {
 
 		const result = await Effect.runPromise(
 			Effect.provideService(
-				executeNoteOperation(
-					createContext({
-						content: 'hello world',
-						attachment: 'https://example.com/a.png',
-					}) as never,
-					0,
-					'http://localhost:5001/api/v1' as never,
-					'createNote',
+				Effect.provideService(
+					executeNoteOperation(0, 'http://localhost:5001/api/v1' as never, 'createNote'),
+					NodeInput,
+					{
+						getSelection: Effect.die('selection is not used in the note executor test'),
+						getOwnPublicationInput: () =>
+							Effect.die('own publication input is not used in the note executor test'),
+						getNoteInput: () =>
+							Effect.succeed({
+								_tag: 'createNote',
+								content: 'hello world',
+								attachment: 'https://example.com/a.png',
+							}),
+						getDraftInput: () => Effect.die('draft input is not used in the note executor test'),
+						getPostInput: () => Effect.die('post input is not used in the note executor test'),
+						getProfileInput: () =>
+							Effect.die('profile input is not used in the note executor test'),
+					},
 				),
 				HttpClient.HttpClient,
 				{

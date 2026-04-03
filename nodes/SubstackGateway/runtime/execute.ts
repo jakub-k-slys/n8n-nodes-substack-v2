@@ -1,9 +1,9 @@
-import { Effect, Match } from 'effect';
+import { Effect, Layer, Match } from 'effect';
 import type { IExecuteFunctions, INodeExecutionData } from 'n8n-workflow';
 
 import type { GatewayUrl } from '../schema';
 import { makeGatewayClientLayer } from './gateway-client';
-import { readGatewaySelection } from './read-input';
+import { makeNodeInputLayer, NodeInput } from './node-input';
 import {
 	executeDraftOperation,
 	executeNoteOperation,
@@ -20,13 +20,14 @@ export const runGatewayOperation = (
 	Effect.runPromise(
 		Effect.provide(
 			Effect.gen(function* () {
-				const selection = yield* readGatewaySelection(context, itemIndex);
+				const nodeInput = yield* NodeInput;
+				const selection = yield* nodeInput.getSelection;
 				return yield* Match.value(selection).pipe(
 					Match.when({ resource: 'ownPublication' }, ({ operation }) =>
 						executeOwnPublicationOperation(context, itemIndex, gatewayUrl, operation),
 					),
 					Match.when({ resource: 'note' }, ({ operation }) =>
-						executeNoteOperation(context, itemIndex, gatewayUrl, operation),
+						executeNoteOperation(itemIndex, gatewayUrl, operation),
 					),
 					Match.when({ resource: 'draft' }, ({ operation }) =>
 						executeDraftOperation(context, itemIndex, gatewayUrl, operation),
@@ -55,6 +56,6 @@ export const runGatewayOperation = (
 					),
 				),
 			),
-			makeGatewayClientLayer(context),
+			Layer.merge(makeNodeInputLayer(context, itemIndex), makeGatewayClientLayer(context)),
 		),
 	);
