@@ -22,7 +22,7 @@ describe('package build smoke', () => {
 		const credential = new SubstackGatewayApi();
 
 		assert.equal(credential.name, 'substackGatewayApi');
-		assert.equal(credential.displayName, 'Substack Gateway');
+		assert.equal(credential.displayName, 'Substack Gateway API');
 		assert.equal(credential.properties[0]?.name, 'gatewayUrl');
 		assert.equal(credential.properties[1]?.name, 'gatewayToken');
 	});

@@ -5,4 +5,10 @@ export default [
 	{
 		ignores: ['.old/**'],
 	},
+	{
+		files: ['test/package/*.test.ts'],
+		rules: {
+			'import-x/no-unresolved': 'off',
+		},
+	},
 ];
