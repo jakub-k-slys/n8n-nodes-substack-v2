@@ -1,63 +1,54 @@
 # Introduction
 
-`n8n-nodes-substack-new` provides a gateway-backed Substack integration for n8n and a small TypeScript client for direct usage.
+`n8n-nodes-substack-new-template` currently provides one n8n node: `Substack Gateway`.
 
 ## Current Scope
 
 The package supports:
 
-- Reading profiles
-- Listing followed profiles
-- Reading posts
-- Reading notes
-- Creating notes
-- Reading comments for a post
-
-It does not currently implement post creation, post likes, or comment creation.
+- own publication profile, notes, posts, and following
+- note create/get/delete
+- draft create/get/list/update/delete
+- post get and comment listing
+- profile get, notes, and posts
 
 ## Package Surfaces
 
 ### n8n Node
 
-The n8n node is exposed as `Substack Gateway` and is implemented in [`nodes/SubstackGateway/Substack.node.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/Substack.node.ts).
+The node is implemented in [`nodes/SubstackGateway/SubstackGateway.node.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/SubstackGateway.node.ts).
 
-Resources:
+Current resources:
 
-- `profile`
-- `post`
-- `note`
-- `comment`
-
-### TypeScript Client
-
-The package entrypoint re-exports `SubstackClient` from [`index.ts`](/Users/jakubslys/n8n-nodes-substack-new/index.ts).
-
-The client implementation lives in [`nodes/SubstackGateway/shared/SubstackGatewayClient.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/shared/SubstackGatewayClient.ts).
+- `Own Publication`
+- `Note`
+- `Draft`
+- `Post`
+- `Profile`
 
 ## Authentication Model
 
 Requests are sent to a gateway service using:
 
-- Bearer token in the `Authorization` header
-- Publication URL in the `x-publication-url` header
+- `x-gateway-token` header
+- the configured `Gateway URL` as the base URL
 
 The n8n credential exposes:
 
-- `publicationAddress`
 - `gatewayUrl`
-- `apiKey`
+- `gatewayToken`
 
 ## Data Flow
 
 At runtime the n8n node:
 
-1. Loads `SubstackGateway API` credentials
-2. Builds a `SubstackClient`
-3. Routes the selected resource and operation to the matching handler
-4. Formats results into n8n-friendly JSON output
+1. Loads `Substack Gateway` credentials
+2. Decodes the selected resource and operation
+3. Runs the matching resource-local Effect pipeline
+4. Serializes the result into n8n JSON output
 
 ## Where To Start
 
 - Use [Quickstart](quickstart.md) for first setup
 - Use [n8n Usage](n8n-usage.md) for workflow-facing behavior
-- Use [API Reference](api-reference.md) for the direct client
+- Use [API Reference](api-reference.md) for the node contract

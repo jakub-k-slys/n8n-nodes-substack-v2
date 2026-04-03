@@ -7,59 +7,55 @@
   "nodes": [
     {
       "name": "Get Own Profile",
-      "type": "n8n-nodes-substack-new.substack",
+      "type": "n8n-nodes-substack-new-template.substackGateway",
       "parameters": {
-        "resource": "profile",
-        "operation": "getOwnProfile"
+        "resource": "ownPublication",
+        "operation": "ownProfile"
       },
       "credentials": {
-        "substackApi": "your-credential-id"
+        "substackGatewayApi": "your-credential-id"
       }
     }
   ]
 }
 ```
 
-## n8n: Get Posts From Another Publication
+## n8n: List Drafts
 
 ```json
 {
   "nodes": [
     {
-      "name": "Get Posts By Slug",
-      "type": "n8n-nodes-substack-new.substack",
+      "name": "List Drafts",
+      "type": "n8n-nodes-substack-new-template.substackGateway",
       "parameters": {
-        "resource": "post",
-        "operation": "getPostsBySlug",
-        "slug": "example",
-        "limit": 10
+        "resource": "draft",
+        "operation": "listDrafts"
       },
       "credentials": {
-        "substackApi": "your-credential-id"
+        "substackGatewayApi": "your-credential-id"
       }
     }
   ]
 }
 ```
 
-## n8n: Create Note With Attached Link
+## n8n: Create Note
 
 ```json
 {
   "nodes": [
     {
       "name": "Create Note",
-      "type": "n8n-nodes-substack-new.substack",
+      "type": "n8n-nodes-substack-new-template.substackGateway",
       "parameters": {
         "resource": "note",
-        "operation": "create",
-        "body": "Worth reading",
-        "visibility": "everyone",
-        "attachment": "link",
-        "linkUrl": "https://example.com/article"
+        "operation": "createNote",
+        "content": "Worth reading",
+        "attachment": "https://example.com/article"
       },
       "credentials": {
-        "substackApi": "your-credential-id"
+        "substackGatewayApi": "your-credential-id"
       }
     }
   ]
@@ -73,34 +69,16 @@
   "nodes": [
     {
       "name": "Get Comments",
-      "type": "n8n-nodes-substack-new.substack",
+      "type": "n8n-nodes-substack-new-template.substackGateway",
       "parameters": {
-        "resource": "comment",
-        "operation": "getAll",
-        "postId": 12345,
-        "limit": 20
+        "resource": "post",
+        "operation": "getPostComments",
+        "postId": 12345
       },
       "credentials": {
-        "substackApi": "your-credential-id"
+        "substackGatewayApi": "your-credential-id"
       }
     }
   ]
-}
-```
-
-## Client: Read Notes By Slug
-
-```ts
-import { SubstackClient } from 'n8n-nodes-substack-new';
-
-const client = new SubstackClient({
-  publicationUrl: 'https://myblog.substack.com',
-  token: process.env.SUBSTACK_GATEWAY_TOKEN!,
-});
-
-const profile = await client.profileForSlug('example');
-
-for await (const note of profile.notes()) {
-  console.log(note.id, note.body);
 }
 ```

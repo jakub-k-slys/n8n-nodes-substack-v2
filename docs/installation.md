@@ -5,10 +5,10 @@
 Install the package where n8n can load community nodes:
 
 ```bash
-npm install n8n-nodes-substack-new
+npm install n8n-nodes-substack-new-template
 ```
 
-If you are using n8n's community package UI, install `n8n-nodes-substack-new` there and restart n8n afterward.
+If you are using n8n's community package UI, install `n8n-nodes-substack-new-template` there and restart n8n afterward.
 
 ## Requirements
 
@@ -17,15 +17,12 @@ If you are using n8n's community package UI, install `n8n-nodes-substack-new` th
 
 ## Credential Setup
 
-Create a `SubstackGateway API` credential with:
+Create a `Substack Gateway` credential with:
 
-- `Publication Address`
-  - Example: `https://myblog.substack.com`
 - `Gateway URL`
-  - Optional override for the gateway base URL
-  - Default: `https://substack-gateway.vercel.app`
-- `API Key`
-  - Gateway bearer token
+  - Default: `https://substack-gateway.vercel.app/api/v1`
+- `Gateway Token`
+  - Sent as `x-gateway-token`
 
 ## Local Development Setup
 
@@ -51,4 +48,6 @@ Test:
 
 ```bash
 pnpm test
+pnpm test:unit
+pnpm run test:package
 ```

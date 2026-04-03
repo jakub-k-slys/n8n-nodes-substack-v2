@@ -2,65 +2,40 @@
 
 ## Operations
 
-### `create`
+### `Create`
 
 Parameters:
 
-- `body` string, required
-- `visibility`
-  - `everyone`
-  - `subscribers`
-- `attachment`
-  - `none`
-  - `link`
-- `linkUrl`
-  - required when `attachment` is `link`
+- `content` string, required
+- `attachment` optional string
 
 Returns:
 
-- `noteId`
-- `body`
-- `url`
-- `date`
-- `status`
-- `visibility`
-- `attachment`
-- `linkUrl`
+- `id`
 
-### `get`
+### `Get`
 
 Parameters:
 
-- `limit`
-  - default `50`
-
-Lists notes from the authenticated publication.
-
-### `getNotesBySlug`
-
-Parameters:
-
-- `slug` string, required
-- `limit`
-  - default `50`
-
-Lists notes from another publication identified by slug.
-
-### `getNoteById`
-
-Parameters:
-
-- `noteId` string, required
+- `noteId` number, required
 
 Returns a single note.
 
+### `Delete`
+
+Parameters:
+
+- `noteId` number, required
+
+Returns:
+
+- `success`
+- `noteId`
+
 ## Output Fields
 
-- `noteId`
+- `id`
 - `body`
-- `url`
-- `date`
-- `status`
-- `userId`
-- `likes`
-- `type`
+- `likesCount`
+- `author`
+- `publishedAt`

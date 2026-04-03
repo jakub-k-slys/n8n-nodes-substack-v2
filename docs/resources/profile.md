@@ -2,46 +2,35 @@
 
 ## Operations
 
-### `getOwnProfile`
-
-Returns the authenticated profile.
-
-Output fields:
-
-- `id`
-- `name`
-- `handle`
-- `bio`
-- `url`
-- `avatarUrl`
-
-### `getProfileBySlug`
+### `Get`
 
 Parameters:
 
-- `slug` string, required
+- `profileSlug` string, required
 
 Returns the profile for the given publication slug.
 
-### `getFollowees`
+### `Get Notes`
 
 Parameters:
 
-- `returnType`
-  - `profiles`
-  - `ids`
-- `limit`
-  - default `50`
+- `profileSlug` string, required
+- `cursor` optional string
 
-When `returnType` is `profiles`, each item includes:
+Returns notes for the given profile.
 
-- `id`
-- `name`
-- `handle`
-- `bio`
-- `url`
-- `avatarUrl`
+### `Get Posts`
 
-When `returnType` is `ids`, each item includes:
+Parameters:
 
-- `id`
+- `profileSlug` string, required
+- `limit` number, default `50`
+- `offset` number, default `0`
+
+Returns posts for the given profile.
+
+## Output Fields
+
+- profile: `id`, `handle`, `name`, `url`, `avatarUrl`, optional `bio`
+- note: `id`, `body`, `likesCount`, `author`, `publishedAt`
+- post summary: `id`, `title`, `publishedAt`, optional `subtitle`, optional `truncatedBody`

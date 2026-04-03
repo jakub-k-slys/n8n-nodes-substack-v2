@@ -1,8 +1,8 @@
 # n8n-nodes-substack-new-template
 
-This is an n8n community node. It currently includes a starter `Substack Gateway` node for building the Substack integration.
+This package provides the `Substack Gateway` n8n community node.
 
-The `Substack Gateway` node is a scaffold and should be extended with the actual Substack operations and credentials you plan to support.
+It integrates n8n with a gateway-backed Substack API and currently exposes read and write operations for own publication data, notes, drafts, posts, and profiles.
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/sustainable-use-license/) workflow automation platform.
 
@@ -20,27 +20,34 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Operations
 
-_List the operations supported by your node._
+Supported resources:
+
+- `Own Publication`
+- `Note`
+- `Draft`
+- `Post`
+- `Profile`
 
 ## Credentials
 
-_If users need to authenticate with the app/service, provide details here. You should include prerequisites (such as signing up with the service), available authentication methods, and how to set them up._
+The node uses the `Substack Gateway` credential with:
+
+- `Gateway URL`
+- `Gateway Token`
 
 ## Compatibility
 
-_State the minimum n8n version, as well as which versions you test against. You can also include any known version incompatibility issues._
+This package targets modern n8n releases with community nodes enabled. Check local test/build status in this repository for the current verified workflow.
 
 ## Usage
 
-_This is an optional section. Use it to help users with any difficult or confusing aspects of the node._
-
-_By the time users are looking for community nodes, they probably already know n8n basics. But if you expect new users, you can link to the [Try it out](https://docs.n8n.io/try-it-out/) documentation to help them get started._
+See [`docs/quickstart.md`](/Users/jakubslys/n8n-nodes-substack-new/docs/quickstart.md) and [`docs/n8n-usage.md`](/Users/jakubslys/n8n-nodes-substack-new/docs/n8n-usage.md).
 
 ## Resources
 
 * [n8n community nodes documentation](https://docs.n8n.io/integrations/#community-nodes)
-* _Link to app/service documentation._
+* [`docs/index.md`](/Users/jakubslys/n8n-nodes-substack-new/docs/index.md)
 
 ## Version history
 
-_This is another optional section. If your node has multiple versions, include a short description of available versions and what changed, as well as any compatibility impact._
+See [`docs/changelog.md`](/Users/jakubslys/n8n-nodes-substack-new/docs/changelog.md).

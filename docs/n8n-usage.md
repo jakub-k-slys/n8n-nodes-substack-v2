@@ -3,132 +3,90 @@
 ## Node Identity
 
 - Display name: `Substack Gateway`
-- Internal name: `substack`
-- Credential name: `substackApi`
+- Internal name: `substackGateway`
+- Credential name: `substackGatewayApi`
 
 ## Resources And Operations
 
-### Profile
+### Own Publication
 
-- `getOwnProfile`
-- `getProfileBySlug`
-- `getFollowees`
-
-### Post
-
-- `getAll`
-- `getPostsBySlug`
-- `getPostById`
+- `ownProfile`
+- `ownNotes`
+- `ownPosts`
+- `ownFollowing`
 
 ### Note
 
-- `create`
-- `get`
-- `getNotesBySlug`
-- `getNoteById`
+- `createNote`
+- `getNote`
+- `deleteNote`
 
-### Comment
+### Draft
 
-- `getAll`
+- `createDraft`
+- `getDraft`
+- `listDrafts`
+- `updateDraft`
+- `deleteDraft`
+
+### Post
+
+- `getPost`
+- `getPostComments`
+
+### Profile
+
+- `getProfile`
+- `getProfileNotes`
+- `getProfilePosts`
 
 ## Parameters
 
-### Shared
+### Note Parameters
 
-- `limit`
-  - Used on list-style operations
-  - Minimum value: `1`
-  - Default: `50`
+- `content`
+  - Required for `createNote`
+- `attachment`
+  - Optional for `createNote`
+- `noteId`
+  - Required for `getNote` and `deleteNote`
 
-### Profile Parameters
+### Draft Parameters
 
-- `slug`
-  - Required for `getProfileBySlug`
-- `returnType`
-  - Used by `getFollowees`
-  - Values:
-    - `profiles`
-    - `ids`
+- `draftId`
+  - Required for `getDraft`, `updateDraft`, and `deleteDraft`
+- `title`, `subtitle`, `body`
+  - Used for `createDraft` and `updateDraft`
 
 ### Post Parameters
 
-- `slug`
-  - Required for `getPostsBySlug`
 - `postId`
-  - Required for `getPostById`
+  - Required for `getPost` and `getPostComments`
 
-### Note Parameters
+### Profile Parameters
 
-- `body`
-  - Required for `create`
-- `visibility`
-  - Values:
-    - `everyone`
-    - `subscribers`
-- `attachment`
-  - Values:
-    - `none`
-    - `link`
-- `linkUrl`
-  - Required when `attachment` is `link`
-- `slug`
-  - Required for `getNotesBySlug`
-- `noteId`
-  - Required for `getNoteById`
-
-### Comment Parameters
-
-- `postId`
-  - Required for `getAll`
+- `profileSlug`
+  - Required for all `Profile` operations
+- `cursor`
+  - Used on `getProfileNotes`
+- `limit`
+  - Used on `getProfilePosts`
+  - Default: `50`
+- `offset`
+  - Used on `getProfilePosts`
+  - Default: `0`
 
 ## Output Shapes
 
-### Profiles
+The node returns plain JSON items. Output fields vary by resource and operation.
 
-Profile responses contain:
+Common shapes:
 
-- `id`
-- `name`
-- `handle`
-- `bio`
-- `url`
-- `avatarUrl`
-
-### Posts
-
-Post responses contain:
-
-- `id`
-- `title`
-- `subtitle`
-- `slug`
-- `url`
-- `postDate`
-- `description`
-- `htmlBody`
-- `markdown`
-
-### Notes
-
-Note responses contain:
-
-- `noteId`
-- `body`
-- `url`
-- `date`
-- `status`
-- `userId`
-- `likes`
-- `type`
-
-### Comments
-
-Comment responses contain:
-
-- `id`
-- `body`
-- `isAdmin`
-- `parentPostId`
+- profile: `id`, `handle`, `name`, `url`, `avatarUrl`, optional `bio`
+- note: `id`, `body`, `likesCount`, `author`, `publishedAt`
+- draft summary: `id`, `uuid`, optional `title`, optional `updated`
+- post summary/full post: `id`, `title`, `publishedAt`, plus post-specific optional fields
+- comment: `id`, `body`, `isAdmin`
 
 ## Error Handling
 
@@ -136,8 +94,8 @@ Operation handlers return structured failures that the main node converts into n
 
 Common failure cases:
 
-- Missing API key
-- Invalid publication URL
-- Empty `body` when creating a note
+- Missing gateway token
+- Invalid gateway URL
+- Empty `content` when creating a note
 - Invalid numeric IDs
 - Gateway-side request failures

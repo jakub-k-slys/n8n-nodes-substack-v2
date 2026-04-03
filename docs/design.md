@@ -2,64 +2,56 @@
 
 ## High-Level Structure
 
-The package is organized around the `Substack Gateway` n8n node plus a shared client layer.
+The package is organized around the `Substack Gateway` n8n node and a resource-oriented runtime.
 
 Key paths:
 
-- [`nodes/SubstackGateway/Substack.node.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/Substack.node.ts)
-- [`nodes/SubstackGateway/SubstackUtils.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/SubstackUtils.ts)
-- [`nodes/SubstackGateway/shared/SubstackGatewayClient.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/shared/SubstackGatewayClient.ts)
-- [`nodes/SubstackGateway/shared/DataFormatters.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/shared/DataFormatters.ts)
+- [`nodes/SubstackGateway/SubstackGateway.node.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/SubstackGateway.node.ts)
+- [`nodes/SubstackGateway/runtime`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/runtime)
+- [`nodes/SubstackGateway/domain`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/domain)
+- [`nodes/SubstackGateway/schema`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/schema)
 
 ## Node Layer
 
-`Substack.node.ts` reads the selected `resource` and `operation`, resolves the matching handler map, and executes the corresponding operation module.
+`SubstackGateway.node.ts` is the n8n-facing adapter:
 
-Resource modules:
+- loads credentials
+- validates `Gateway URL`
+- runs the selected operation for each input item
+- converts domain/runtime errors into n8n errors
 
-- `Profile.operations.ts`
-- `Post.operations.ts`
-- `Note.operations.ts`
-- `Comment.operations.ts`
+## Runtime Layer
 
-Each resource also has a matching `*.fields.ts` file for parameter definitions.
+The runtime is split by resource under [`runtime/resources`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/runtime/resources):
 
-## Shared Utilities
+- `own-publication`
+- `note`
+- `draft`
+- `post`
+- `profile`
 
-### `SubstackUtils`
+Each resource owns its:
 
-Responsible for:
+- input reader
+- command decode
+- request build
+- response decode
+- execute pipeline
+- output DTO serialization
 
-- Loading n8n credentials
-- Validating publication URLs
-- Constructing `SubstackClient`
-- Formatting structured error responses
+## Effect Integration
 
-### `OperationHandler`
+The runtime uses:
 
-Responsible for:
+- `Effect` for orchestration
+- `Effect.Schema` for input, response, and output DTO boundaries
+- `@effect/platform` `HttpClient` as the transport abstraction
 
-- Uniform success/error wrapping
-- Shared list collection helpers
-- Shared limit parsing
-- Profile resolution by slug or own profile
-
-### `DataFormatters`
-
-Transforms raw client objects into the node's output shapes.
-
-## Client Layer
-
-`SubstackGatewayClient.ts` implements:
-
-- Gateway HTTP transport via `axios`
-- Request throttling via `axios-rate-limit`
-- Profile, note, post, and comment iteration helpers
-- A small public typed API re-exported from [`index.ts`](/Users/jakubslys/n8n-nodes-substack-new/index.ts)
+Host-specific adapters live under [`runtime/live`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/runtime/live).
 
 ## Build Output
 
 The package compiles to `dist/`, and `package.json` points n8n to:
 
 - `dist/credentials/SubstackGatewayApi.credentials.js`
-- `dist/nodes/SubstackGateway/Substack.node.js`
+- `dist/nodes/SubstackGateway/SubstackGateway.node.js`

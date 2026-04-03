@@ -2,41 +2,34 @@
 
 ## Operations
 
-### `getAll`
+### `Get`
 
 Parameters:
 
-- `limit`
-  - default `50`
-
-Lists posts from the authenticated publication.
-
-### `getPostsBySlug`
-
-Parameters:
-
-- `slug` string, required
-- `limit`
-  - default `50`
-
-Lists posts for another publication identified by slug.
-
-### `getPostById`
-
-Parameters:
-
-- `postId` string, required
+- `postId` number, required
 
 Returns a single post.
+
+### `Get Comments`
+
+Parameters:
+
+- `postId` number, required
+
+Returns the comments for a post.
 
 ## Output Fields
 
 - `id`
 - `title`
-- `subtitle`
 - `slug`
 - `url`
-- `postDate`
-- `description`
+- `publishedAt`
+- optional `subtitle`
 - `htmlBody`
 - `markdown`
+- optional `truncatedBody`
+- optional `reactions`
+- optional `restacks`
+- optional `tags`
+- optional `coverImage`

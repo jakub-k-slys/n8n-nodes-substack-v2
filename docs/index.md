@@ -1,6 +1,6 @@
 # Substack Gateway Docs
 
-This documentation covers the current `n8n-nodes-substack-new` package.
+This documentation covers the current `n8n-nodes-substack-new-template` package.
 
 Core guides:
 
@@ -21,7 +21,8 @@ Project guides:
 
 Resource guides:
 
+- [Draft](resources/draft.md)
 - [Profile](resources/profile.md)
 - [Post](resources/post.md)
 - [Note](resources/note.md)
-- [Comment](resources/comment.md)
+- [Own Publication](resources/own-publication.md)

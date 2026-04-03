@@ -19,7 +19,7 @@ pnpm test
 
 ## Guidelines
 
-- Keep the n8n node surface aligned with the shared client
-- Prefer small, explicit output shapes
-- Update docs when operations or parameters change
-- Do not introduce stale references to the removed external `substack-api` package
+- Keep the documented node surface aligned with `domain/operation.ts`
+- Prefer resource-local runtime code and serializers
+- Update docs when operations, parameters, or credentials change
+- Do not reintroduce references to a standalone `SubstackClient` API unless such an API actually exists

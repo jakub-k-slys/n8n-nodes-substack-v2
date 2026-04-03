@@ -3,18 +3,17 @@
 ## 1. Install The Package
 
 ```bash
-npm install n8n-nodes-substack-new
+npm install n8n-nodes-substack-new-template
 ```
 
 Restart n8n after installation.
 
 ## 2. Create Credentials
 
-Add a `SubstackGateway API` credential with:
+Add a `Substack Gateway` credential with:
 
-- `Publication Address`: `https://your-publication.substack.com`
-- `Gateway URL`: leave default unless you run your own gateway
-- `API Key`: your gateway bearer token
+- `Gateway URL`: leave the default unless you run your own gateway
+- `Gateway Token`: your gateway token
 
 ## 3. Add The Node
 
@@ -24,8 +23,8 @@ In n8n, add the `Substack Gateway` node.
 
 Use:
 
-- `Resource`: `profile`
-- `Operation`: `getOwnProfile`
+- `Resource`: `Own Publication`
+- `Operation`: `Own Profile`
 
 This returns your current profile summary.
 
@@ -33,33 +32,18 @@ This returns your current profile summary.
 
 Use:
 
-- `Resource`: `note`
-- `Operation`: `create`
-- `Body`: some note text
-- `Visibility`: `everyone`
-- `Attachment`: `none`
+- `Resource`: `Note`
+- `Operation`: `Create`
+- `Content`: some note text
+- `Attachment`: optional URL
 
-This creates a note through the gateway and returns:
+This creates a note through the gateway and returns a created note identifier.
 
-- `noteId`
-- `body`
-- `url`
-- `date`
-- `status`
-- `visibility`
+## 6. Try A List Operation
 
-## 6. Try Direct Client Usage
+Use:
 
-```ts
-import { SubstackClient } from 'n8n-nodes-substack-new';
+- `Resource`: `Draft`
+- `Operation`: `Get Many`
 
-const client = new SubstackClient({
-  publicationUrl: 'https://your-publication.substack.com',
-  token: process.env.SUBSTACK_GATEWAY_TOKEN!,
-});
-
-const ownProfile = await client.ownProfile();
-const created = await ownProfile.publishNote('Hello from the client');
-
-console.log(created.id);
-```
+This returns the current draft list from the gateway.

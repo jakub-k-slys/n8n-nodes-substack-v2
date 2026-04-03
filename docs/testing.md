@@ -2,39 +2,49 @@
 
 ## Test Suite
 
-Run all unit tests:
+Feature tests:
 
 ```bash
 pnpm test
 ```
 
-Watch mode:
+Fast source-level unit tests:
 
 ```bash
-pnpm run test:watch
+pnpm test:unit
+```
+
+Build-coupled package smoke test:
+
+```bash
+pnpm run test:package
 ```
 
 ## What Is Tested
 
-The unit tests cover:
+The current test suite covers:
 
-- Profile operations
-- Post operations
-- Note operations
-- Comment operations
-- Output formatting
-- Input validation
-- Integration-style behavior inside the node execution flow
+- operation decoding
+- input reading
+- resource-local execution pipelines
+- transport layer behavior
+- result serialization
+- packaged build smoke
 
 ## Test Strategy
 
-The tests do not call a live gateway. They mock the client returned by `SubstackUtils.initializeClient()`.
+The tests do not call a live gateway.
+
+The runtime is tested at two levels:
+
+- source-level unit tests against the TypeScript modules under [`nodes/SubstackGateway/runtime`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/runtime)
+- Cucumber feature tests for higher-level behavior
+- one package smoke test against built `dist/` output
 
 Main helpers:
 
-- [`tests/mocks/mockSubstackClient.ts`](/Users/jakubslys/n8n-nodes-substack-new/tests/mocks/mockSubstackClient.ts)
-- [`tests/mocks/mockExecuteFunctions.ts`](/Users/jakubslys/n8n-nodes-substack-new/tests/mocks/mockExecuteFunctions.ts)
-- [`tests/utils/testSetup.ts`](/Users/jakubslys/n8n-nodes-substack-new/tests/utils/testSetup.ts)
+- [`test/features`](/Users/jakubslys/n8n-nodes-substack-new/test/features)
+- [`test/package/package-smoke.test.ts`](/Users/jakubslys/n8n-nodes-substack-new/test/package/package-smoke.test.ts)
 
 ## Before Merging
 
@@ -44,4 +54,6 @@ Run:
 pnpm run lint
 pnpm run build
 pnpm test
+pnpm test:unit
+pnpm run test:package
 ```

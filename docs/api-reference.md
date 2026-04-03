@@ -1,191 +1,75 @@
 # API Reference
 
-This package exports `SubstackClient` for direct usage outside n8n.
+This package currently documents the `Substack Gateway` n8n node, not a standalone TypeScript client API.
 
-```ts
-import { SubstackClient } from 'n8n-nodes-substack-new';
-```
+## Node
 
-## Constructor
+- display name: `Substack Gateway`
+- internal name: `substackGateway`
+- credential name: `substackGatewayApi`
 
-```ts
-new SubstackClient(config)
-```
+## Credential Fields
 
-### `SubstackClientConfig`
+- `Gateway URL`
+- `Gateway Token`
 
-```ts
-interface SubstackClientConfig {
-  publicationUrl: string;
-  token: string;
-  gatewayUrl?: string;
-  perPage?: number;
-  maxRequestsPerSecond?: number;
-}
-```
+## Resources And Operations
 
-## Top-Level Methods
+### Own Publication
 
-### `ownProfile()`
+- `Own Profile`
+- `Own Notes`
+- `Own Posts`
+- `Own Following`
 
-```ts
-ownProfile(): Promise<SubstackOwnProfile>
-```
+### Note
 
-Returns the authenticated profile context.
+- `Create`
+- `Get`
+- `Delete`
 
-### `profileForSlug(slug)`
+### Draft
 
-```ts
-profileForSlug(slug: string): Promise<SubstackProfile>
-```
+- `Create`
+- `Get`
+- `Get Many`
+- `Update`
+- `Delete`
 
-Returns a profile context for the given publication slug.
+### Post
 
-### `postForId(id)`
+- `Get`
+- `Get Comments`
 
-```ts
-postForId(id: number): Promise<SubstackPost>
-```
+### Profile
 
-Returns a post object with comment iteration support.
+- `Get`
+- `Get Notes`
+- `Get Posts`
 
-### `noteForId(id)`
+## Input Fields
 
-```ts
-noteForId(id: number): Promise<SubstackNote>
-```
+Shared fields are resource-specific:
 
-Returns a single note.
+- `noteId`
+- `draftId`
+- `postId`
+- `profileSlug`
+- `content`
+- `attachment`
+- `title`
+- `subtitle`
+- `body`
+- `cursor`
+- `limit`
+- `offset`
 
-## Context Types
+## Output Shape
 
-### `SubstackProfileSummary`
+The node returns plain JSON items shaped by resource-specific serializers. Common fields include:
 
-```ts
-interface SubstackProfileSummary {
-  id: number;
-  name: string;
-  handle: string;
-  slug: string;
-  url: string;
-  bio?: string;
-  avatarUrl?: string;
-}
-```
-
-### `SubstackProfile`
-
-```ts
-interface SubstackProfile extends SubstackProfileSummary {
-  posts(): AsyncIterable<SubstackPostSummary>;
-  notes(): AsyncIterable<SubstackNote>;
-}
-```
-
-### `SubstackOwnProfile`
-
-```ts
-interface SubstackOwnProfile extends SubstackProfile {
-  following(): AsyncIterable<SubstackProfileSummary>;
-  publishNote(
-    content: string,
-    options?: { attachment?: string }
-  ): Promise<SubstackPublishNoteResponse>;
-}
-```
-
-### `SubstackPostSummary`
-
-```ts
-interface SubstackPostSummary {
-  id: number;
-  title: string;
-  subtitle: string;
-  slug?: string;
-  url?: string;
-  truncatedBody: string;
-  htmlBody: string;
-  markdown: string;
-  publishedAt: string;
-}
-```
-
-### `SubstackPost`
-
-```ts
-interface SubstackPost extends SubstackPostSummary {
-  comments(): AsyncIterable<SubstackComment>;
-}
-```
-
-### `SubstackNote`
-
-```ts
-interface SubstackNote {
-  id: number;
-  body: string;
-  likesCount: number;
-  publishedAt: string;
-  author: {
-    id: number;
-    name: string;
-    handle: string;
-    avatarUrl?: string;
-  };
-}
-```
-
-### `SubstackComment`
-
-```ts
-interface SubstackComment {
-  id: number;
-  body: string;
-  isAdmin: boolean;
-}
-```
-
-### `SubstackPublishNoteResponse`
-
-```ts
-interface SubstackPublishNoteResponse {
-  id: number;
-}
-```
-
-## Examples
-
-### Iterate Your Own Posts
-
-```ts
-const client = new SubstackClient({
-  publicationUrl: 'https://myblog.substack.com',
-  token: process.env.SUBSTACK_GATEWAY_TOKEN!,
-});
-
-const ownProfile = await client.ownProfile();
-
-for await (const post of ownProfile.posts()) {
-  console.log(post.id, post.title);
-}
-```
-
-### Create A Note
-
-```ts
-const ownProfile = await client.ownProfile();
-const created = await ownProfile.publishNote('Shipped from the gateway client');
-
-console.log(created.id);
-```
-
-### Read Comments For A Post
-
-```ts
-const post = await client.postForId(12345);
-
-for await (const comment of post.comments()) {
-  console.log(comment.body);
-}
-```
+- profiles: `id`, `handle`, `name`, `url`, `avatarUrl`, optional `bio`
+- notes: `id`, `body`, `likesCount`, `author`, `publishedAt`
+- posts: `id`, `title`, `slug`, `url`, `publishedAt`, optional rich post fields
+- drafts: `id`/`uuid` for summary and creation flows, or optional `title`/`subtitle`/`body` for fetched draft content
+- comments: `id`, `body`, `isAdmin`
