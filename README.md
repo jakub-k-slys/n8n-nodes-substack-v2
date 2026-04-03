@@ -1,32 +1,18 @@
 # n8n-nodes-substack-new
 
-This package provides the `Substack Gateway` n8n community node.
+`n8n-nodes-substack-new` provides the `Substack Gateway` n8n community node.
 
-It integrates n8n with a gateway-backed Substack API and currently exposes read and write operations for own publication data, notes, drafts, posts, and profiles.
-
-[n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/sustainable-use-license/) workflow automation platform.
-
-[Installation](#installation)
-[Operations](#operations)
-[Credentials](#credentials)
-[Compatibility](#compatibility)
-[Usage](#usage)
-[Resources](#resources)
-[Version history](#version-history)
+It integrates n8n with a gateway-backed Substack API and currently supports own publication data, notes, drafts, posts, and profiles.
 
 ## Installation
 
-Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
+Install the package in the n8n instance where community nodes are enabled:
 
-## Operations
+```bash
+npm install n8n-nodes-substack-new
+```
 
-Supported resources:
-
-- `Own Publication`
-- `Note`
-- `Draft`
-- `Post`
-- `Profile`
+Restart n8n after installation.
 
 ## Credentials
 
@@ -35,19 +21,78 @@ The node uses the `Substack Gateway` credential with:
 - `Gateway URL`
 - `Gateway Token`
 
-## Compatibility
-
-This package targets modern n8n releases with community nodes enabled. Check local test/build status in this repository for the current verified workflow.
-
-## Usage
-
-See [`docs/quickstart.md`](/Users/jakubslys/n8n-nodes-substack-new/docs/quickstart.md) and [`docs/n8n-usage.md`](/Users/jakubslys/n8n-nodes-substack-new/docs/n8n-usage.md).
-
 ## Resources
 
-* [n8n community nodes documentation](https://docs.n8n.io/integrations/#community-nodes)
-* [`docs/index.md`](/Users/jakubslys/n8n-nodes-substack-new/docs/index.md)
+Current resources and operations:
 
-## Version history
+- `Own Publication`
+  - `Own Profile`
+  - `Own Notes`
+  - `Own Posts`
+  - `Own Following`
+- `Note`
+  - `Create`
+  - `Get`
+  - `Delete`
+- `Draft`
+  - `Create`
+  - `Get`
+  - `Get Many`
+  - `Update`
+  - `Delete`
+- `Post`
+  - `Get`
+  - `Get Comments`
+- `Profile`
+  - `Get`
+  - `Get Notes`
+  - `Get Posts`
 
-See [`docs/changelog.md`](/Users/jakubslys/n8n-nodes-substack-new/docs/changelog.md).
+## Quickstart
+
+1. Install the package and restart n8n.
+2. Create a `Substack Gateway` credential.
+3. Add the `Substack Gateway` node to a workflow.
+4. Try:
+   - `Resource: Own Publication`
+   - `Operation: Own Profile`
+
+For a simple write flow, use:
+
+- `Resource: Note`
+- `Operation: Create`
+- `Content: ...`
+- `Attachment: ...` (optional)
+
+## Development
+
+Common commands:
+
+```bash
+pnpm run build
+pnpm run dev
+pnpm run lint
+pnpm test
+pnpm test:unit
+pnpm run test:package
+```
+
+Notes:
+
+- `pnpm run build` uses `tsup` and copies the n8n static assets into `dist/`
+- `pnpm run dev` builds the package, prepares a local dev package, and runs local n8n with watch mode
+- `pnpm test` runs the Cucumber feature suite
+- `pnpm test:unit` runs the fast source-level TypeScript tests
+- `pnpm run test:package` verifies the built `dist/` package
+
+## Documentation
+
+- [Docs Index](/Users/jakubslys/n8n-nodes-substack-new/docs/index.md)
+- [Quickstart](/Users/jakubslys/n8n-nodes-substack-new/docs/quickstart.md)
+- [n8n Usage](/Users/jakubslys/n8n-nodes-substack-new/docs/n8n-usage.md)
+- [Architecture](/Users/jakubslys/n8n-nodes-substack-new/docs/design.md)
+- [Testing](/Users/jakubslys/n8n-nodes-substack-new/docs/testing.md)
+
+## Compatibility
+
+This package targets modern n8n releases with community nodes enabled. Verify against the current build and test workflow in this repository.
