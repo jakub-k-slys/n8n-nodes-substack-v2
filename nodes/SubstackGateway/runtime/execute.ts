@@ -7,6 +7,7 @@ import { decodeGatewayCommand } from './decode-command';
 import { decodeGatewayResponse } from './decode-response';
 import { executeDraftOperation } from './execute-draft';
 import { executeOwnPublicationOperation } from './execute-own-publication';
+import { executePostOperation } from './execute-post';
 import { executeGatewayRequest } from './execute-request';
 import { executeNoteOperation } from './execute-note';
 import { makeGatewayClientLayer } from './gateway-client';
@@ -38,6 +39,10 @@ export const runGatewayOperation = (
 
 				if (selection.resource === 'draft') {
 					return yield* executeDraftOperation(context, itemIndex, gatewayUrl, selection.operation);
+				}
+
+				if (selection.resource === 'post') {
+					return yield* executePostOperation(context, itemIndex, gatewayUrl, selection.operation);
 				}
 
 				const command = yield* decodeGatewayCommand(context, itemIndex);
