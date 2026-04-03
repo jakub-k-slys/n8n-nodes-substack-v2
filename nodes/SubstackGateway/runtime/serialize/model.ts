@@ -1,4 +1,5 @@
 import type { IDataObject } from 'n8n-workflow';
+import * as Schema from 'effect/Schema';
 
 import type {
 	CreatedDraft,
@@ -17,11 +18,34 @@ import type {
 } from '../../domain/model';
 import { optional } from './shared';
 
+const JsonNoteAuthorSchema = Schema.Struct({
+	id: Schema.Number,
+	name: Schema.String,
+	handle: Schema.String,
+	avatarUrl: Schema.String,
+});
+
+const JsonNoteSchema = Schema.Struct({
+	id: Schema.Number,
+	body: Schema.String,
+	likesCount: Schema.Number,
+	author: JsonNoteAuthorSchema,
+	publishedAt: Schema.String,
+});
+
+const JsonCreatedNoteSchema = Schema.Struct({
+	id: Schema.Number,
+});
+
+const JsonDeletedNoteSchema = Schema.Struct({
+	success: Schema.Boolean,
+	noteId: Schema.Number,
+});
+
+const encodeJson = <A>(schema: Schema.Schema<A>) => Schema.encodeSync(schema);
+
 export const toJsonNoteAuthor = (author: GatewayNoteAuthor): IDataObject => ({
-	id: author.id,
-	name: author.name,
-	handle: author.handle,
-	avatarUrl: author.avatarUrl,
+	...encodeJson(JsonNoteAuthorSchema)(author),
 });
 
 export const toJsonProfile = (profile: GatewayProfile): IDataObject => ({
@@ -39,11 +63,10 @@ export const toJsonFollowingUser = (user: GatewayFollowingUser): IDataObject => 
 });
 
 export const toJsonNote = (note: GatewayNote): IDataObject => ({
-	id: note.id,
-	body: note.body,
-	likesCount: note.likesCount,
-	author: toJsonNoteAuthor(note.author),
-	publishedAt: note.publishedAt,
+	...encodeJson(JsonNoteSchema)({
+		...note,
+		author: encodeJson(JsonNoteAuthorSchema)(note.author),
+	}),
 });
 
 export const toJsonPostSummary = (post: GatewayPostSummary): IDataObject => ({
@@ -90,7 +113,7 @@ export const toJsonComment = (comment: GatewayComment): IDataObject => ({
 });
 
 export const toJsonCreatedNote = (note: CreatedNote): IDataObject => ({
-	id: note.id,
+	...encodeJson(JsonCreatedNoteSchema)(note),
 });
 
 export const toJsonCreatedDraft = (draft: CreatedDraft): IDataObject => ({
@@ -99,8 +122,7 @@ export const toJsonCreatedDraft = (draft: CreatedDraft): IDataObject => ({
 });
 
 export const toJsonDeletedNote = (note: DeletedNote): IDataObject => ({
-	success: note.success,
-	noteId: note.noteId,
+	...encodeJson(JsonDeletedNoteSchema)(note),
 });
 
 export const toJsonDeletedDraft = (draft: DeletedDraft): IDataObject => ({
