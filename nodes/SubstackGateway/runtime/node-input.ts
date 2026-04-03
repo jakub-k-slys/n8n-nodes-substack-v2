@@ -11,7 +11,11 @@ import type {
 } from '../domain/input';
 import type { GatewayOperation } from '../domain/operation';
 import { readSelection } from './read-input/shared';
-import { readDraftInput, readNoteInput, readOwnPublicationInput, readPostInput, readProfileInput } from './resources';
+import { readDraftInput } from './resources/draft/read-input';
+import { readNoteInput } from './resources/note/read-input';
+import { readOwnPublicationInput } from './resources/own-publication/read-input';
+import { readPostInput } from './resources/post/read-input';
+import { readProfileInput } from './resources/profile/read-input';
 
 export type GatewaySelection = {
 	readonly resource: string;

@@ -3,11 +3,11 @@ import { describe, it } from 'node:test';
 
 import { Effect } from 'effect';
 
-import { readDraftInput } from '../dist/nodes/SubstackGateway/runtime/resources/draft/index.js';
-import { readNoteInput } from '../dist/nodes/SubstackGateway/runtime/resources/note/index.js';
-import { readOwnPublicationInput } from '../dist/nodes/SubstackGateway/runtime/resources/own-publication/index.js';
-import { readPostInput } from '../dist/nodes/SubstackGateway/runtime/resources/post/index.js';
-import { readProfileInput } from '../dist/nodes/SubstackGateway/runtime/resources/profile/index.js';
+import { readDraftInput } from '../dist/nodes/SubstackGateway/runtime/resources/draft/read-input.js';
+import { readNoteInput } from '../dist/nodes/SubstackGateway/runtime/resources/note/read-input.js';
+import { readOwnPublicationInput } from '../dist/nodes/SubstackGateway/runtime/resources/own-publication/read-input.js';
+import { readPostInput } from '../dist/nodes/SubstackGateway/runtime/resources/post/read-input.js';
+import { readProfileInput } from '../dist/nodes/SubstackGateway/runtime/resources/profile/read-input.js';
 
 type TestContext = {
 	getNodeParameter: (name: string, itemIndex?: number, fallback?: unknown) => unknown;
