@@ -70,17 +70,18 @@ describe('executeOwnPublicationOperation', () => {
 		);
 
 		assert.equal(capturedUrl, 'http://localhost:5001/api/v1/me');
-		assert.deepEqual(result, [
-			{
-				json: {
+		assert.deepEqual(result, {
+			_tag: 'OwnPublication',
+			result: {
+				_tag: 'Profile',
+				item: {
 					id: 1,
 					handle: 'substack',
 					name: 'Substack',
 					url: 'https://substack.com',
 					avatarUrl: 'https://cdn.example/avatar.png',
 				},
-				pairedItem: { item: 0 },
 			},
-		]);
+		});
 	});
 });

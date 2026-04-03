@@ -5,6 +5,7 @@ import type { GatewayUrl } from '../schema';
 import { makeGatewayClientLayer } from './live/gateway-client';
 import { makeNodeInputLayer } from './live/node-input';
 import { NodeInput } from './node-input';
+import { toNodeExecutionData } from './to-node-data';
 import {
 	executeDraftOperation,
 	executeNoteOperation,
@@ -48,6 +49,7 @@ export const runGatewayOperation = (
 					),
 				);
 			}).pipe(
+				Effect.map((result) => toNodeExecutionData(itemIndex, result)),
 				Effect.tapError((error) =>
 					Effect.logError('Gateway operation failed').pipe(
 						Effect.annotateLogs({

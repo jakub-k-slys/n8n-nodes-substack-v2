@@ -63,13 +63,14 @@ describe('executeNoteOperation', () => {
 		);
 
 		assert.equal(capturedUrl, 'http://localhost:5001/api/v1/notes');
-		assert.deepEqual(result, [
-			{
-				json: {
+		assert.deepEqual(result, {
+			_tag: 'Note',
+			result: {
+				_tag: 'Created',
+				item: {
 					id: 1,
 				},
-				pairedItem: { item: 0 },
 			},
-		]);
+		});
 	});
 });

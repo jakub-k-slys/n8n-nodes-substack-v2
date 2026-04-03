@@ -1,14 +1,13 @@
 import * as HttpClient from '@effect/platform/HttpClient';
 import { Either, Effect } from 'effect';
-import type { INodeExecutionData } from 'n8n-workflow';
 
 import type { GatewayError } from '../../../domain/error';
 import type { PostOperation } from '../../../domain/operation';
+import type { GatewayResult } from '../../../domain/result';
 import type { GatewayUrl } from '../../../schema';
 import { decodeGatewayOperation } from '../../decode-operation';
 import { executeGatewayRequest } from '../../execute-request';
 import { NodeInput } from '../../node-input';
-import { toNodeExecutionData } from '../../to-node-data';
 import { buildPostRequest } from './build';
 import { decodePostCommand } from './decode';
 import { decodePostResponse } from './decode-response';
@@ -31,7 +30,7 @@ export const executePostOperation = (
 	itemIndex: number,
 	gatewayUrl: GatewayUrl,
 	operation: string,
-): Effect.Effect<INodeExecutionData[], GatewayError, HttpClient.HttpClient | NodeInput> =>
+): Effect.Effect<GatewayResult, GatewayError, HttpClient.HttpClient | NodeInput> =>
 	Effect.gen(function* () {
 		const postOperation = yield* decodePostOperation(operation);
 		const nodeInput = yield* NodeInput;
@@ -66,5 +65,5 @@ export const executePostOperation = (
 			}),
 		);
 
-		return toNodeExecutionData(itemIndex, result);
+		return result;
 	});

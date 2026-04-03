@@ -62,14 +62,15 @@ describe('executeDraftOperation', () => {
 		);
 
 		assert.equal(capturedUrl, 'http://localhost:5001/api/v1/drafts');
-		assert.deepEqual(result, [
-			{
-				json: {
+		assert.deepEqual(result, {
+			_tag: 'Draft',
+			result: {
+				_tag: 'Created',
+				item: {
 					id: 7,
 					uuid: 'draft-uuid',
 				},
-				pairedItem: { item: 0 },
 			},
-		]);
+		});
 	});
 });

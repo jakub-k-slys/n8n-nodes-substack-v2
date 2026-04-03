@@ -63,17 +63,26 @@ describe('executePostOperation', () => {
 		);
 
 		assert.equal(capturedUrl, 'http://localhost:5001/api/v1/posts/42');
-		assert.deepEqual(result, [
-			{
-				json: {
+		assert.deepEqual(result, {
+			_tag: 'Post',
+			result: {
+				_tag: 'Fetched',
+				item: {
+					coverImage: undefined,
+					htmlBody: undefined,
 					id: 42,
+					markdown: undefined,
 					title: 'Hello',
 					slug: 'hello',
 					url: 'https://example.com/p/hello',
 					publishedAt: '2026-04-03T10:00:00.000Z',
+					reactions: undefined,
+					restacks: undefined,
+					subtitle: undefined,
+					tags: undefined,
+					truncatedBody: undefined,
 				},
-				pairedItem: { item: 0 },
 			},
-		]);
+		});
 	});
 });
