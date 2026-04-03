@@ -1,30 +1,5 @@
-export {
-	buildDraftRequest,
-	decodeDraftCommand,
-	decodeDraftResponse,
-	executeDraftOperation,
-} from './draft';
-export {
-	buildNoteRequest,
-	decodeNoteCommand,
-	decodeNoteResponse,
-	executeNoteOperation,
-} from './note';
-export {
-	buildOwnPublicationRequest,
-	decodeOwnPublicationCommand,
-	decodeOwnPublicationResponse,
-	executeOwnPublicationOperation,
-} from './own-publication';
-export {
-	buildPostRequest,
-	decodePostCommand,
-	decodePostResponse,
-	executePostOperation,
-} from './post';
-export {
-	buildProfileRequest,
-	decodeProfileCommand,
-	decodeProfileResponse,
-	executeProfileOperation,
-} from './profile';
+export { executeDraftOperation } from './draft';
+export { executeNoteOperation } from './note';
+export { executeOwnPublicationOperation } from './own-publication';
+export { executePostOperation } from './post';
+export { executeProfileOperation } from './profile';
