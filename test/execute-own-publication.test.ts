@@ -5,15 +5,8 @@ import * as HttpClient from '@effect/platform/HttpClient';
 import * as ClientResponse from '@effect/platform/HttpClientResponse';
 import { Effect } from 'effect';
 
+import { NodeInput } from '../dist/nodes/SubstackGateway/runtime/node-input.js';
 import { executeOwnPublicationOperation } from '../dist/nodes/SubstackGateway/runtime/resources/own-publication/index.js';
-
-type TestContext = {
-	getNodeParameter: (name: string, itemIndex?: number, fallback?: unknown) => unknown;
-};
-
-const createContext = (parameters: Record<string, unknown>): TestContext => ({
-	getNodeParameter: (name, _itemIndex, fallback) => (name in parameters ? parameters[name] : fallback),
-});
 
 describe('executeOwnPublicationOperation', () => {
 	it('should execute an own-publication-local pipeline', async () => {
@@ -21,11 +14,30 @@ describe('executeOwnPublicationOperation', () => {
 
 		const result = await Effect.runPromise(
 			Effect.provideService(
-				executeOwnPublicationOperation(
-					createContext({}) as never,
-					0,
-					'http://localhost:5001/api/v1' as never,
-					'ownProfile',
+				Effect.provideService(
+					executeOwnPublicationOperation(
+						0,
+						'http://localhost:5001/api/v1' as never,
+						'ownProfile',
+					),
+					NodeInput,
+					{
+						getSelection: Effect.die(
+							'selection is not used in the own-publication executor test',
+						),
+						getOwnPublicationInput: () =>
+							Effect.succeed({
+								_tag: 'ownProfile',
+							}),
+						getNoteInput: () =>
+							Effect.die('note input is not used in the own-publication executor test'),
+						getDraftInput: () =>
+							Effect.die('draft input is not used in the own-publication executor test'),
+						getPostInput: () =>
+							Effect.die('post input is not used in the own-publication executor test'),
+						getProfileInput: () =>
+							Effect.die('profile input is not used in the own-publication executor test'),
+					},
 				),
 				HttpClient.HttpClient,
 				{

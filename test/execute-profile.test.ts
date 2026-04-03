@@ -5,15 +5,8 @@ import * as HttpClient from '@effect/platform/HttpClient';
 import * as ClientResponse from '@effect/platform/HttpClientResponse';
 import { Effect } from 'effect';
 
+import { NodeInput } from '../dist/nodes/SubstackGateway/runtime/node-input.js';
 import { executeProfileOperation } from '../dist/nodes/SubstackGateway/runtime/resources/profile/index.js';
-
-type TestContext = {
-	getNodeParameter: (name: string, itemIndex?: number, fallback?: unknown) => unknown;
-};
-
-const createContext = (parameters: Record<string, unknown>): TestContext => ({
-	getNodeParameter: (name, _itemIndex, fallback) => (name in parameters ? parameters[name] : fallback),
-});
 
 describe('executeProfileOperation', () => {
 	it('should execute a profile-local pipeline', async () => {
@@ -21,13 +14,25 @@ describe('executeProfileOperation', () => {
 
 		const result = await Effect.runPromise(
 			Effect.provideService(
-				executeProfileOperation(
-					createContext({
-						profileSlug: 'substack',
-					}) as never,
-					0,
-					'http://localhost:5001/api/v1' as never,
-					'getProfile',
+				Effect.provideService(
+					executeProfileOperation(0, 'http://localhost:5001/api/v1' as never, 'getProfile'),
+					NodeInput,
+					{
+						getSelection: Effect.die('selection is not used in the profile executor test'),
+						getOwnPublicationInput: () =>
+							Effect.die('own publication input is not used in the profile executor test'),
+						getNoteInput: () =>
+							Effect.die('note input is not used in the profile executor test'),
+						getDraftInput: () =>
+							Effect.die('draft input is not used in the profile executor test'),
+						getPostInput: () =>
+							Effect.die('post input is not used in the profile executor test'),
+						getProfileInput: () =>
+							Effect.succeed({
+								_tag: 'getProfile',
+								profileSlug: 'substack',
+							}),
+					},
 				),
 				HttpClient.HttpClient,
 				{

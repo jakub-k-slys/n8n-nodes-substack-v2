@@ -24,19 +24,19 @@ export const runGatewayOperation = (
 				const selection = yield* nodeInput.getSelection;
 				return yield* Match.value(selection).pipe(
 					Match.when({ resource: 'ownPublication' }, ({ operation }) =>
-						executeOwnPublicationOperation(context, itemIndex, gatewayUrl, operation),
+						executeOwnPublicationOperation(itemIndex, gatewayUrl, operation),
 					),
 					Match.when({ resource: 'note' }, ({ operation }) =>
 						executeNoteOperation(itemIndex, gatewayUrl, operation),
 					),
 					Match.when({ resource: 'draft' }, ({ operation }) =>
-						executeDraftOperation(context, itemIndex, gatewayUrl, operation),
+						executeDraftOperation(itemIndex, gatewayUrl, operation),
 					),
 					Match.when({ resource: 'post' }, ({ operation }) =>
-						executePostOperation(context, itemIndex, gatewayUrl, operation),
+						executePostOperation(itemIndex, gatewayUrl, operation),
 					),
 					Match.when({ resource: 'profile' }, ({ operation }) =>
-						executeProfileOperation(context, itemIndex, gatewayUrl, operation),
+						executeProfileOperation(itemIndex, gatewayUrl, operation),
 					),
 					Match.orElse(({ resource, operation }) =>
 						Effect.fail({

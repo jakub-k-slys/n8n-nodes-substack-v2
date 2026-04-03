@@ -5,15 +5,8 @@ import * as HttpClient from '@effect/platform/HttpClient';
 import * as ClientResponse from '@effect/platform/HttpClientResponse';
 import { Effect } from 'effect';
 
+import { NodeInput } from '../dist/nodes/SubstackGateway/runtime/node-input.js';
 import { executeDraftOperation } from '../dist/nodes/SubstackGateway/runtime/resources/draft/index.js';
-
-type TestContext = {
-	getNodeParameter: (name: string, itemIndex?: number, fallback?: unknown) => unknown;
-};
-
-const createContext = (parameters: Record<string, unknown>): TestContext => ({
-	getNodeParameter: (name, _itemIndex, fallback) => (name in parameters ? parameters[name] : fallback),
-});
 
 describe('executeDraftOperation', () => {
 	it('should execute a draft-local pipeline', async () => {
@@ -21,15 +14,25 @@ describe('executeDraftOperation', () => {
 
 		const result = await Effect.runPromise(
 			Effect.provideService(
-				executeDraftOperation(
-					createContext({
-						title: 'Hello',
-						subtitle: '',
-						body: 'World',
-					}) as never,
-					0,
-					'http://localhost:5001/api/v1' as never,
-					'createDraft',
+				Effect.provideService(
+					executeDraftOperation(0, 'http://localhost:5001/api/v1' as never, 'createDraft'),
+					NodeInput,
+					{
+						getSelection: Effect.die('selection is not used in the draft executor test'),
+						getOwnPublicationInput: () =>
+							Effect.die('own publication input is not used in the draft executor test'),
+						getNoteInput: () => Effect.die('note input is not used in the draft executor test'),
+						getDraftInput: () =>
+							Effect.succeed({
+								_tag: 'createDraft',
+								title: 'Hello',
+								subtitle: null,
+								body: 'World',
+							}),
+						getPostInput: () => Effect.die('post input is not used in the draft executor test'),
+						getProfileInput: () =>
+							Effect.die('profile input is not used in the draft executor test'),
+					},
 				),
 				HttpClient.HttpClient,
 				{
