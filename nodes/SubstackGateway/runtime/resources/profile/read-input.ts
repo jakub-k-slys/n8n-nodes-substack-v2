@@ -4,8 +4,8 @@ import type { IExecuteFunctions } from 'n8n-workflow';
 import type { GatewayError } from '../../../domain/error';
 import type { ProfileInput } from '../../../domain/input';
 import type { GatewayOperation } from '../../../domain/operation';
-import { getOptionalString } from '../../params';
-import { unexpectedError } from '../../read-input/shared';
+import { getOptionalString } from '../../live/params';
+import { unexpectedError } from '../../live/read-input-shared';
 
 export const readProfileInput = (
 	context: IExecuteFunctions,

@@ -4,8 +4,8 @@ import type { IExecuteFunctions } from 'n8n-workflow';
 import type { GatewayError } from '../../../domain/error';
 import type { DraftInput } from '../../../domain/input';
 import type { GatewayOperation } from '../../../domain/operation';
-import { getDraftPayload } from '../../params';
-import { unexpectedError } from '../../read-input/shared';
+import { getDraftPayload } from '../../live/params';
+import { unexpectedError } from '../../live/read-input-shared';
 
 export const readDraftInput = (
 	context: IExecuteFunctions,

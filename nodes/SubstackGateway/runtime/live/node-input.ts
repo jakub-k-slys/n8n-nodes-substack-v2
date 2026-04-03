@@ -2,7 +2,7 @@ import { Layer } from 'effect';
 import type { IExecuteFunctions } from 'n8n-workflow';
 
 import { NodeInput } from '../node-input';
-import { readSelection } from '../read-input/shared';
+import { readSelection } from './read-input-shared';
 import { readDraftInput } from '../resources/draft/read-input';
 import { readNoteInput } from '../resources/note/read-input';
 import { readOwnPublicationInput } from '../resources/own-publication/read-input';

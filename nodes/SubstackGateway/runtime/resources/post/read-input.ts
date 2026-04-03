@@ -4,7 +4,7 @@ import type { IExecuteFunctions } from 'n8n-workflow';
 import type { GatewayError } from '../../../domain/error';
 import type { PostInput } from '../../../domain/input';
 import type { GatewayOperation } from '../../../domain/operation';
-import { unexpectedError } from '../../read-input/shared';
+import { unexpectedError } from '../../live/read-input-shared';
 
 export const readPostInput = (
 	context: IExecuteFunctions,
