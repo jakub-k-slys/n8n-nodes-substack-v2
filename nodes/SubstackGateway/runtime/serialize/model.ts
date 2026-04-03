@@ -42,6 +42,28 @@ const JsonDeletedNoteSchema = Schema.Struct({
 	noteId: Schema.Number,
 });
 
+const JsonProfileSchema = Schema.Struct({
+	id: Schema.Number,
+	handle: Schema.String,
+	name: Schema.String,
+	url: Schema.String,
+	avatarUrl: Schema.String,
+	bio: Schema.optional(Schema.NullOr(Schema.String)),
+});
+
+const JsonFollowingUserSchema = Schema.Struct({
+	id: Schema.Number,
+	handle: Schema.String,
+});
+
+const JsonPostSummarySchema = Schema.Struct({
+	id: Schema.Number,
+	title: Schema.String,
+	publishedAt: Schema.String,
+	subtitle: Schema.optional(Schema.NullOr(Schema.String)),
+	truncatedBody: Schema.optional(Schema.NullOr(Schema.String)),
+});
+
 const encodeJson = <A>(schema: Schema.Schema<A>) => Schema.encodeSync(schema);
 
 export const toJsonNoteAuthor = (author: GatewayNoteAuthor): IDataObject => ({
@@ -49,17 +71,18 @@ export const toJsonNoteAuthor = (author: GatewayNoteAuthor): IDataObject => ({
 });
 
 export const toJsonProfile = (profile: GatewayProfile): IDataObject => ({
-	id: profile.id,
-	handle: profile.handle,
-	name: profile.name,
-	url: profile.url,
-	avatarUrl: profile.avatarUrl,
-	...optional('bio', profile.bio),
+	...encodeJson(JsonProfileSchema)({
+		id: profile.id,
+		handle: profile.handle,
+		name: profile.name,
+		url: profile.url,
+		avatarUrl: profile.avatarUrl,
+		...optional('bio', profile.bio),
+	}),
 });
 
 export const toJsonFollowingUser = (user: GatewayFollowingUser): IDataObject => ({
-	id: user.id,
-	handle: user.handle,
+	...encodeJson(JsonFollowingUserSchema)(user),
 });
 
 export const toJsonNote = (note: GatewayNote): IDataObject => ({
@@ -70,11 +93,13 @@ export const toJsonNote = (note: GatewayNote): IDataObject => ({
 });
 
 export const toJsonPostSummary = (post: GatewayPostSummary): IDataObject => ({
-	id: post.id,
-	title: post.title,
-	publishedAt: post.publishedAt,
-	...optional('subtitle', post.subtitle),
-	...optional('truncatedBody', post.truncatedBody),
+	...encodeJson(JsonPostSummarySchema)({
+		id: post.id,
+		title: post.title,
+		publishedAt: post.publishedAt,
+		...optional('subtitle', post.subtitle),
+		...optional('truncatedBody', post.truncatedBody),
+	}),
 });
 
 export const toJsonPost = (post: GatewayPost): IDataObject => ({
