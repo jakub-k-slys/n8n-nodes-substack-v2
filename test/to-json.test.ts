@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { gatewayResultToJsonItems } from '../dist/nodes/SubstackGateway/runtime/to-json.js';
+import { gatewayResultToJsonItems } from '../nodes/SubstackGateway/runtime/to-json.ts';
 
 describe('gatewayResultToJsonItems', () => {
 	it('should serialize note results explicitly', () => {

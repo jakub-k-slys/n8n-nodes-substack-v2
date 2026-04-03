@@ -3,9 +3,9 @@ import { describe, it } from 'node:test';
 
 import { Effect, Match } from 'effect';
 
-import { decodeGatewayOperation } from '../dist/nodes/SubstackGateway/runtime/decode-operation.js';
-import { makeNodeInputLayer } from '../dist/nodes/SubstackGateway/runtime/live/node-input.js';
-import { NodeInput } from '../dist/nodes/SubstackGateway/runtime/node-input.js';
+import { decodeGatewayOperation } from '../nodes/SubstackGateway/runtime/decode-operation.ts';
+import { makeNodeInputLayer } from '../nodes/SubstackGateway/runtime/live/node-input.ts';
+import { NodeInput } from '../nodes/SubstackGateway/runtime/node-input.ts';
 
 type TestContext = {
 	getNodeParameter: (name: string, itemIndex?: number, fallback?: unknown) => unknown;

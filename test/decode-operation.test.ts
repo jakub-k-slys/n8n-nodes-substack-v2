@@ -3,7 +3,7 @@ import { describe, it } from 'node:test';
 
 import { Either } from 'effect';
 
-import { decodeGatewayOperation } from '../dist/nodes/SubstackGateway/runtime/decode-operation.js';
+import { decodeGatewayOperation } from '../nodes/SubstackGateway/runtime/decode-operation.ts';
 
 describe('decodeGatewayOperation', () => {
 	it('should decode supported resource operations', () => {

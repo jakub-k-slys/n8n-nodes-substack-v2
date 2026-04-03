@@ -5,8 +5,8 @@ import * as HttpClient from '@effect/platform/HttpClient';
 import * as ClientResponse from '@effect/platform/HttpClientResponse';
 import { Effect } from 'effect';
 
-import { NodeInput } from '../dist/nodes/SubstackGateway/runtime/node-input.js';
-import { executePostOperation } from '../dist/nodes/SubstackGateway/runtime/resources/post/index.js';
+import { NodeInput } from '../nodes/SubstackGateway/runtime/node-input.ts';
+import { executePostOperation } from '../nodes/SubstackGateway/runtime/resources/post/index.ts';
 
 describe('executePostOperation', () => {
 	it('should execute a post-local pipeline', async () => {

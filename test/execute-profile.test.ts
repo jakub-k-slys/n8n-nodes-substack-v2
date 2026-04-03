@@ -5,8 +5,8 @@ import * as HttpClient from '@effect/platform/HttpClient';
 import * as ClientResponse from '@effect/platform/HttpClientResponse';
 import { Effect } from 'effect';
 
-import { NodeInput } from '../dist/nodes/SubstackGateway/runtime/node-input.js';
-import { executeProfileOperation } from '../dist/nodes/SubstackGateway/runtime/resources/profile/index.js';
+import { NodeInput } from '../nodes/SubstackGateway/runtime/node-input.ts';
+import { executeProfileOperation } from '../nodes/SubstackGateway/runtime/resources/profile/index.ts';
 
 describe('executeProfileOperation', () => {
 	it('should execute a profile-local pipeline', async () => {

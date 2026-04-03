@@ -5,8 +5,8 @@ import * as HttpClient from '@effect/platform/HttpClient';
 import * as ClientResponse from '@effect/platform/HttpClientResponse';
 import { Effect } from 'effect';
 
-import { NodeInput } from '../dist/nodes/SubstackGateway/runtime/node-input.js';
-import { executeNoteOperation } from '../dist/nodes/SubstackGateway/runtime/resources/note/index.js';
+import { NodeInput } from '../nodes/SubstackGateway/runtime/node-input.ts';
+import { executeNoteOperation } from '../nodes/SubstackGateway/runtime/resources/note/index.ts';
 
 describe('executeNoteOperation', () => {
 	it('should execute a note-local pipeline', async () => {

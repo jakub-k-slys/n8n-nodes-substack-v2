@@ -6,14 +6,14 @@ import * as ClientResponse from '@effect/platform/HttpClientResponse';
 import { Given, Then, When } from '@cucumber/cucumber';
 import { Either, Effect, Match } from 'effect';
 
-import { decodeGatewayOperation } from '../../../dist/nodes/SubstackGateway/runtime/decode-operation.js';
-import { executeGatewayRequest } from '../../../dist/nodes/SubstackGateway/runtime/execute-request.js';
-import { makeGatewayClientLayer } from '../../../dist/nodes/SubstackGateway/runtime/live/gateway-client.js';
-import { makeNodeInputLayer } from '../../../dist/nodes/SubstackGateway/runtime/live/node-input.js';
+import { decodeGatewayOperation } from '../../../nodes/SubstackGateway/runtime/decode-operation.ts';
+import { executeGatewayRequest } from '../../../nodes/SubstackGateway/runtime/execute-request.ts';
+import { makeGatewayClientLayer } from '../../../nodes/SubstackGateway/runtime/live/gateway-client.ts';
+import { makeNodeInputLayer } from '../../../nodes/SubstackGateway/runtime/live/node-input.ts';
 import {
 	NodeInput,
-} from '../../../dist/nodes/SubstackGateway/runtime/node-input.js';
-import { gatewayResultToJsonItems } from '../../../dist/nodes/SubstackGateway/runtime/to-json.js';
+} from '../../../nodes/SubstackGateway/runtime/node-input.ts';
+import { gatewayResultToJsonItems } from '../../../nodes/SubstackGateway/runtime/to-json.ts';
 
 type TestContext = {
 	getNodeParameter: (name: string, itemIndex?: number, fallback?: unknown) => unknown;

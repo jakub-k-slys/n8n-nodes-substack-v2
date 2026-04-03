@@ -24,8 +24,9 @@
 		"lint": "n8n-node lint",
 		"lint:fix": "n8n-node lint --fix",
 		"release": "n8n-node release",
-		"test": "pnpm run build && node --import tsx ./node_modules/@cucumber/cucumber/bin/cucumber-js --config cucumber.mjs",
-		"test:unit": "pnpm run build && node --import tsx --test test/*.test.ts",
+		"test": "node --import tsx ./node_modules/@cucumber/cucumber/bin/cucumber-js --config cucumber.mjs",
+		"test:unit": "node --import tsx --test test/*.test.ts",
+		"test:package": "pnpm run build && node --import tsx --test test/package/package-smoke.test.ts",
 		"prepublishOnly": "n8n-node prerelease"
 	},
 	"files": [

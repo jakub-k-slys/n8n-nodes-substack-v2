@@ -5,8 +5,8 @@ import * as HttpClient from '@effect/platform/HttpClient';
 import * as ClientResponse from '@effect/platform/HttpClientResponse';
 import { Effect } from 'effect';
 
-import { NodeInput } from '../dist/nodes/SubstackGateway/runtime/node-input.js';
-import { executeOwnPublicationOperation } from '../dist/nodes/SubstackGateway/runtime/resources/own-publication/index.js';
+import { NodeInput } from '../nodes/SubstackGateway/runtime/node-input.ts';
+import { executeOwnPublicationOperation } from '../nodes/SubstackGateway/runtime/resources/own-publication/index.ts';
 
 describe('executeOwnPublicationOperation', () => {
 	it('should execute an own-publication-local pipeline', async () => {

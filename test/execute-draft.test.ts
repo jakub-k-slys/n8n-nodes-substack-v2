@@ -5,8 +5,8 @@ import * as HttpClient from '@effect/platform/HttpClient';
 import * as ClientResponse from '@effect/platform/HttpClientResponse';
 import { Effect } from 'effect';
 
-import { NodeInput } from '../dist/nodes/SubstackGateway/runtime/node-input.js';
-import { executeDraftOperation } from '../dist/nodes/SubstackGateway/runtime/resources/draft/index.js';
+import { NodeInput } from '../nodes/SubstackGateway/runtime/node-input.ts';
+import { executeDraftOperation } from '../nodes/SubstackGateway/runtime/resources/draft/index.ts';
 
 describe('executeDraftOperation', () => {
 	it('should execute a draft-local pipeline', async () => {
