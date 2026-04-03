@@ -1,10 +1,10 @@
 import { Effect } from 'effect';
 import type { IExecuteFunctions } from 'n8n-workflow';
 
-import type { OwnPublicationInput } from '../../domain/input';
-import type { GatewayError } from '../../domain/error';
-import type { GatewayOperation } from '../../domain/operation';
-import { unexpectedError } from './shared';
+import type { OwnPublicationInput } from '../../../domain/input';
+import type { GatewayError } from '../../../domain/error';
+import type { GatewayOperation } from '../../../domain/operation';
+import { unexpectedError } from '../../read-input/shared';
 
 export const readOwnPublicationInput = (
 	_context: IExecuteFunctions,

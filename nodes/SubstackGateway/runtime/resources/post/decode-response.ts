@@ -1,10 +1,10 @@
 import { Either, Match } from 'effect';
-import type { PostCommand } from '../../domain/command';
-import type { GatewayError } from '../../domain/error';
-import type { GatewayResult } from '../../domain/result';
-import { PostCommentsResponseSchema, PostGetResponseSchema } from '../../schema';
-import { toGatewayComment, toGatewayPost } from './map';
-import { decodeResponseSchema } from './shared';
+import type { PostCommand } from '../../../domain/command';
+import type { GatewayError } from '../../../domain/error';
+import type { GatewayResult } from '../../../domain/result';
+import { PostCommentsResponseSchema, PostGetResponseSchema } from '../../../schema';
+import { toGatewayComment, toGatewayPost } from '../../decode-response/map';
+import { decodeResponseSchema } from '../../decode-response/shared';
 
 export const decodePostResponse = (
 	command: PostCommand,

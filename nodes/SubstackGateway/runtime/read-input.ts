@@ -10,12 +10,12 @@ import type {
 	ProfileInput,
 } from '../domain/input';
 import type { GatewayOperation } from '../domain/operation';
-import { readDraftInput } from './read-input/draft';
-import { readNoteInput } from './read-input/note';
-import { readOwnPublicationInput } from './read-input/own-publication';
-import { readPostInput } from './read-input/post';
-import { readProfileInput } from './read-input/profile';
 import { readSelection } from './read-input/shared';
+import { readDraftInput } from './resources/draft/read-input';
+import { readNoteInput } from './resources/note/read-input';
+import { readOwnPublicationInput } from './resources/own-publication/read-input';
+import { readPostInput } from './resources/post/read-input';
+import { readProfileInput } from './resources/profile/read-input';
 
 export const readGatewaySelection = readSelection;
 

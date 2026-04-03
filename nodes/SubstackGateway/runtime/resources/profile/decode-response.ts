@@ -1,14 +1,14 @@
 import { Either, Match } from 'effect';
-import type { GatewayResult } from '../../domain/result';
-import type { GatewayError } from '../../domain/error';
-import type { ProfileCommand } from '../../domain/command';
+import type { GatewayResult } from '../../../domain/result';
+import type { GatewayError } from '../../../domain/error';
+import type { ProfileCommand } from '../../../domain/command';
 import {
 	ProfileGetResponseSchema,
 	ProfileNotesResponseSchema,
 	ProfilePostsResponseSchema,
-} from '../../schema';
-import { toGatewayNote, toGatewayPostSummary, toGatewayProfile } from './map';
-import { decodeResponseSchema } from './shared';
+} from '../../../schema';
+import { toGatewayNote, toGatewayPostSummary, toGatewayProfile } from '../../decode-response/map';
+import { decodeResponseSchema } from '../../decode-response/shared';
 
 export const decodeProfileResponse = (
 	command: ProfileCommand,

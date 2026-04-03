@@ -1,10 +1,10 @@
 import { Either, Match } from 'effect';
 
-import type { NoteCommand } from '../../domain/command';
-import type { GatewayError } from '../../domain/error';
-import type { NoteInput } from '../../domain/input';
-import { CreateNoteInputSchema, NoteIdInputSchema } from '../../schema';
-import { decodeInput } from './shared';
+import type { NoteCommand } from '../../../domain/command';
+import type { GatewayError } from '../../../domain/error';
+import type { NoteInput } from '../../../domain/input';
+import { CreateNoteInputSchema, NoteIdInputSchema } from '../../../schema';
+import { decodeInput } from '../../decode/shared';
 
 export const decodeNoteCommand = (
 	input: NoteInput,

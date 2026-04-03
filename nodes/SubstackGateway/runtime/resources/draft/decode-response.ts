@@ -1,21 +1,16 @@
 import { Either, Match } from 'effect';
-import type { DraftCommand } from '../../domain/command';
-import type { GatewayError } from '../../domain/error';
-import type { GatewayResult } from '../../domain/result';
+import type { DraftCommand } from '../../../domain/command';
+import type { GatewayError } from '../../../domain/error';
+import type { GatewayResult } from '../../../domain/result';
 import {
 	DraftCreateResponseSchema,
 	DraftDeleteResponseSchema,
 	DraftGetResponseSchema,
 	DraftListResponseSchema,
 	DraftUpdateResponseSchema,
-} from '../../schema';
-import {
-	toCreatedDraft,
-	toDeletedDraft,
-	toGatewayDraft,
-	toGatewayDraftSummary,
-} from './map';
-import { decodeResponseSchema } from './shared';
+} from '../../../schema';
+import { toCreatedDraft, toDeletedDraft, toGatewayDraft, toGatewayDraftSummary } from '../../decode-response/map';
+import { decodeResponseSchema } from '../../decode-response/shared';
 
 export const decodeDraftResponse = (
 	command: DraftCommand,

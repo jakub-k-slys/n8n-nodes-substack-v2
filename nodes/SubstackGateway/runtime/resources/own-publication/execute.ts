@@ -2,16 +2,16 @@ import * as HttpClient from '@effect/platform/HttpClient';
 import { Either, Effect } from 'effect';
 import type { IExecuteFunctions, INodeExecutionData } from 'n8n-workflow';
 
-import type { GatewayError } from '../domain/error';
-import type { OwnPublicationOperation } from '../domain/operation';
-import type { GatewayUrl } from '../schema';
-import { buildOwnPublicationRequest } from './build/own-publication';
-import { decodeOwnPublicationCommand } from './decode/own-publication';
-import { decodeOwnPublicationResponse } from './decode-response/own-publication';
-import { decodeGatewayOperation } from './decode-operation';
-import { executeGatewayRequest } from './execute-request';
-import { readOwnPublicationInput } from './read-input/own-publication';
-import { toNodeExecutionData } from './to-node-data';
+import type { GatewayError } from '../../../domain/error';
+import type { OwnPublicationOperation } from '../../../domain/operation';
+import type { GatewayUrl } from '../../../schema';
+import { decodeGatewayOperation } from '../../decode-operation';
+import { executeGatewayRequest } from '../../execute-request';
+import { toNodeExecutionData } from '../../to-node-data';
+import { buildOwnPublicationRequest } from './build';
+import { decodeOwnPublicationCommand } from './decode';
+import { decodeOwnPublicationResponse } from './decode-response';
+import { readOwnPublicationInput } from './read-input';
 
 const fromEither = <A>(result: Either.Either<A, GatewayError>): Effect.Effect<A, GatewayError> =>
 	Either.isRight(result) ? Effect.succeed(result.right) : Effect.fail(result.left);

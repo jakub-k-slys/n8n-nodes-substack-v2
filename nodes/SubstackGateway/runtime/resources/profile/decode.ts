@@ -1,14 +1,14 @@
 import { Either, Match } from 'effect';
 
-import type { ProfileCommand } from '../../domain/command';
-import type { GatewayError } from '../../domain/error';
-import type { ProfileInput } from '../../domain/input';
+import type { ProfileCommand } from '../../../domain/command';
+import type { GatewayError } from '../../../domain/error';
+import type { ProfileInput } from '../../../domain/input';
 import {
 	ProfileNotesInputSchema,
 	ProfilePostsInputSchema,
 	ProfileSlugInputSchema,
-} from '../../schema';
-import { decodeInput } from './shared';
+} from '../../../schema';
+import { decodeInput } from '../../decode/shared';
 
 export const decodeProfileCommand = (
 	input: ProfileInput,

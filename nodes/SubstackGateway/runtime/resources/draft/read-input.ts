@@ -1,11 +1,11 @@
 import { Effect, Match } from 'effect';
 import type { IExecuteFunctions } from 'n8n-workflow';
 
-import type { GatewayError } from '../../domain/error';
-import type { DraftInput } from '../../domain/input';
-import type { GatewayOperation } from '../../domain/operation';
-import { getDraftPayload } from '../params';
-import { unexpectedError } from './shared';
+import type { GatewayError } from '../../../domain/error';
+import type { DraftInput } from '../../../domain/input';
+import type { GatewayOperation } from '../../../domain/operation';
+import { getDraftPayload } from '../../params';
+import { unexpectedError } from '../../read-input/shared';
 
 export const readDraftInput = (
 	context: IExecuteFunctions,

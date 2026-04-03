@@ -1,8 +1,8 @@
 import { Match } from 'effect';
 
-import type { PostCommand } from '../../domain/command';
-import type { GatewayHttpRequest } from '../../domain/http';
-import type { GatewayUrl } from '../../schema';
+import type { PostCommand } from '../../../domain/command';
+import type { GatewayHttpRequest } from '../../../domain/http';
+import type { GatewayUrl } from '../../../schema';
 
 export const buildPostRequest = (
 	gatewayUrl: GatewayUrl,

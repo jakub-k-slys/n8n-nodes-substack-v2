@@ -2,13 +2,13 @@ import { Effect, Match } from 'effect';
 import type { IExecuteFunctions, INodeExecutionData } from 'n8n-workflow';
 
 import type { GatewayUrl } from '../schema';
-import { executeDraftOperation } from './execute-draft';
-import { executeOwnPublicationOperation } from './execute-own-publication';
-import { executePostOperation } from './execute-post';
-import { executeProfileOperation } from './execute-profile';
-import { executeNoteOperation } from './execute-note';
 import { makeGatewayClientLayer } from './gateway-client';
 import { readGatewaySelection } from './read-input';
+import { executeDraftOperation } from './resources/draft/execute';
+import { executeNoteOperation } from './resources/note/execute';
+import { executeOwnPublicationOperation } from './resources/own-publication/execute';
+import { executePostOperation } from './resources/post/execute';
+import { executeProfileOperation } from './resources/profile/execute';
 
 export const runGatewayOperation = (
 	context: IExecuteFunctions,

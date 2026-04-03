@@ -1,14 +1,14 @@
 import { Either, Match } from 'effect';
-import type { NoteCommand } from '../../domain/command';
-import type { GatewayError } from '../../domain/error';
-import type { GatewayResult } from '../../domain/result';
+import type { NoteCommand } from '../../../domain/command';
+import type { GatewayError } from '../../../domain/error';
+import type { GatewayResult } from '../../../domain/result';
 import {
 	NoteCreateResponseSchema,
 	NoteDeleteResponseSchema,
 	NoteGetResponseSchema,
-} from '../../schema';
-import { toCreatedNote, toDeletedNote, toGatewayNote } from './map';
-import { decodeResponseSchema } from './shared';
+} from '../../../schema';
+import { toCreatedNote, toDeletedNote, toGatewayNote } from '../../decode-response/map';
+import { decodeResponseSchema } from '../../decode-response/shared';
 
 export const decodeNoteResponse = (
 	command: NoteCommand,

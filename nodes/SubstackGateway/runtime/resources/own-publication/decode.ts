@@ -1,7 +1,7 @@
 import { Match } from 'effect';
-import type { OwnPublicationCommand } from '../../domain/command';
-import type { OwnPublicationInput } from '../../domain/input';
-import type { OwnPublicationOperation } from '../../domain/operation';
+import type { OwnPublicationCommand } from '../../../domain/command';
+import type { OwnPublicationInput } from '../../../domain/input';
+import type { OwnPublicationOperation } from '../../../domain/operation';
 
 export const decodeOwnPublicationCommand = (
 	input: OwnPublicationInput | OwnPublicationOperation,

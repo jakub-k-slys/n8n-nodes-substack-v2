@@ -1,8 +1,8 @@
 import { Match } from 'effect';
 
-import type { NoteCommand } from '../../domain/command';
-import type { GatewayHttpRequest } from '../../domain/http';
-import type { GatewayUrl } from '../../schema';
+import type { NoteCommand } from '../../../domain/command';
+import type { GatewayHttpRequest } from '../../../domain/http';
+import type { GatewayUrl } from '../../../schema';
 
 export const buildNoteRequest = (
 	gatewayUrl: GatewayUrl,

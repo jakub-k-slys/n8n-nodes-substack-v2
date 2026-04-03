@@ -1,10 +1,14 @@
 import { Either, Match } from 'effect';
 
-import type { DraftCommand } from '../../domain/command';
-import type { GatewayError } from '../../domain/error';
-import type { DraftInput } from '../../domain/input';
-import { DraftFieldsInputSchema, DraftIdInputSchema, DraftWithIdInputSchema } from '../../schema';
-import { decodeInput } from './shared';
+import type { DraftCommand } from '../../../domain/command';
+import type { GatewayError } from '../../../domain/error';
+import type { DraftInput } from '../../../domain/input';
+import {
+	DraftFieldsInputSchema,
+	DraftIdInputSchema,
+	DraftWithIdInputSchema,
+} from '../../../schema';
+import { decodeInput } from '../../decode/shared';
 
 export const decodeDraftCommand = (
 	input: DraftInput,

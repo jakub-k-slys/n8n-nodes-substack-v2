@@ -2,16 +2,16 @@ import * as HttpClient from '@effect/platform/HttpClient';
 import { Either, Effect } from 'effect';
 import type { IExecuteFunctions, INodeExecutionData } from 'n8n-workflow';
 
-import type { GatewayError } from '../domain/error';
-import type { PostOperation } from '../domain/operation';
-import type { GatewayUrl } from '../schema';
-import { buildPostRequest } from './build/post';
-import { decodePostCommand } from './decode/post';
-import { decodePostResponse } from './decode-response/post';
-import { decodeGatewayOperation } from './decode-operation';
-import { executeGatewayRequest } from './execute-request';
-import { readPostInput } from './read-input/post';
-import { toNodeExecutionData } from './to-node-data';
+import type { GatewayError } from '../../../domain/error';
+import type { PostOperation } from '../../../domain/operation';
+import type { GatewayUrl } from '../../../schema';
+import { decodeGatewayOperation } from '../../decode-operation';
+import { executeGatewayRequest } from '../../execute-request';
+import { toNodeExecutionData } from '../../to-node-data';
+import { buildPostRequest } from './build';
+import { decodePostCommand } from './decode';
+import { decodePostResponse } from './decode-response';
+import { readPostInput } from './read-input';
 
 const fromEither = <A>(result: Either.Either<A, GatewayError>): Effect.Effect<A, GatewayError> =>
 	Either.isRight(result) ? Effect.succeed(result.right) : Effect.fail(result.left);

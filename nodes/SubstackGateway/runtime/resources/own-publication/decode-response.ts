@@ -1,20 +1,20 @@
 import { Either, Match } from 'effect';
-import type { OwnPublicationCommand } from '../../domain/command';
-import type { GatewayError } from '../../domain/error';
-import type { GatewayResult } from '../../domain/result';
+import type { OwnPublicationCommand } from '../../../domain/command';
+import type { GatewayError } from '../../../domain/error';
+import type { GatewayResult } from '../../../domain/result';
 import {
 	OwnFollowingResponseSchema,
 	OwnNotesResponseSchema,
 	OwnPostsResponseSchema,
 	OwnProfileResponseSchema,
-} from '../../schema';
+} from '../../../schema';
 import {
 	toGatewayFollowingUser,
 	toGatewayNote,
 	toGatewayPostSummary,
 	toGatewayProfile,
-} from './map';
-import { decodeResponseSchema } from './shared';
+} from '../../decode-response/map';
+import { decodeResponseSchema } from '../../decode-response/shared';
 
 export const decodeOwnPublicationResponse = (
 	command: OwnPublicationCommand,

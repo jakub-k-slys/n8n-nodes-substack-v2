@@ -1,10 +1,10 @@
 import { Either, Match } from 'effect';
 
-import type { PostCommand } from '../../domain/command';
-import type { GatewayError } from '../../domain/error';
-import type { PostInput } from '../../domain/input';
-import { PostIdInputSchema } from '../../schema';
-import { decodeInput } from './shared';
+import type { PostCommand } from '../../../domain/command';
+import type { GatewayError } from '../../../domain/error';
+import type { PostInput } from '../../../domain/input';
+import { PostIdInputSchema } from '../../../schema';
+import { decodeInput } from '../../decode/shared';
 
 export const decodePostCommand = (
 	input: PostInput,
