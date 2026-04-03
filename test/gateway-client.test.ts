@@ -6,7 +6,7 @@ import type * as ClientRequest from '@effect/platform/HttpClientRequest';
 import * as ClientResponse from '@effect/platform/HttpClientResponse';
 import { Effect } from 'effect';
 
-import { makeGatewayClientLayer } from '../dist/nodes/SubstackGateway/runtime/gateway-client.js';
+import { makeGatewayClientLayer } from '../dist/nodes/SubstackGateway/runtime/live/gateway-client.js';
 import { executeGatewayRequest } from '../dist/nodes/SubstackGateway/runtime/execute-request.js';
 
 const textDecoder = new TextDecoder();

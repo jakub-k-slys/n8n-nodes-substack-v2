@@ -7,10 +7,10 @@ import { Given, Then, When } from '@cucumber/cucumber';
 import { Either, Effect, Match } from 'effect';
 
 import { decodeGatewayOperation } from '../../../dist/nodes/SubstackGateway/runtime/decode-operation.js';
-import { makeGatewayClientLayer } from '../../../dist/nodes/SubstackGateway/runtime/gateway-client.js';
 import { executeGatewayRequest } from '../../../dist/nodes/SubstackGateway/runtime/execute-request.js';
+import { makeGatewayClientLayer } from '../../../dist/nodes/SubstackGateway/runtime/live/gateway-client.js';
+import { makeNodeInputLayer } from '../../../dist/nodes/SubstackGateway/runtime/live/node-input.js';
 import {
-	makeNodeInputLayer,
 	NodeInput,
 } from '../../../dist/nodes/SubstackGateway/runtime/node-input.js';
 import { gatewayResultToJsonItems } from '../../../dist/nodes/SubstackGateway/runtime/to-json.js';

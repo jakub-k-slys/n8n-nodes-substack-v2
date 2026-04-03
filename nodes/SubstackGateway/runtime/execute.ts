@@ -2,8 +2,9 @@ import { Effect, Layer, Match } from 'effect';
 import type { IExecuteFunctions, INodeExecutionData } from 'n8n-workflow';
 
 import type { GatewayUrl } from '../schema';
-import { makeGatewayClientLayer } from './gateway-client';
-import { makeNodeInputLayer, NodeInput } from './node-input';
+import { makeGatewayClientLayer } from './live/gateway-client';
+import { makeNodeInputLayer } from './live/node-input';
+import { NodeInput } from './node-input';
 import {
 	executeDraftOperation,
 	executeNoteOperation,

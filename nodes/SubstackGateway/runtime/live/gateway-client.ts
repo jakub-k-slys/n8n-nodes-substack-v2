@@ -81,13 +81,13 @@ const toRequestOptions = (
 	Effect.try({
 		try: () =>
 			({
-			json: true,
-			returnFullResponse: true,
-			method: toRequestMethod(request.method),
-			url: url.toString(),
-			...(Object.keys(request.headers).length === 0 ? {} : { headers: request.headers }),
-			...(request.urlParams.length === 0 ? {} : { qs: UrlParams.toRecord(request.urlParams) }),
-			...(request.body._tag === 'Empty' ? {} : { body: toRequestBody(request) }),
+				json: true,
+				returnFullResponse: true,
+				method: toRequestMethod(request.method),
+				url: url.toString(),
+				...(Object.keys(request.headers).length === 0 ? {} : { headers: request.headers }),
+				...(request.urlParams.length === 0 ? {} : { qs: UrlParams.toRecord(request.urlParams) }),
+				...(request.body._tag === 'Empty' ? {} : { body: toRequestBody(request) }),
 			}) satisfies IHttpRequestOptions,
 		catch: (cause) =>
 			new ClientError.RequestError({
