@@ -5,6 +5,7 @@ import type { GatewayUrl } from '../schema';
 import { buildGatewayRequest } from './build-request';
 import { decodeGatewayCommand } from './decode-command';
 import { decodeGatewayResponse } from './decode-response';
+import { executeOwnPublicationOperation } from './execute-own-publication';
 import { executeGatewayRequest } from './execute-request';
 import { executeNoteOperation } from './execute-note';
 import { makeGatewayClientLayer } from './gateway-client';
@@ -20,6 +21,15 @@ export const runGatewayOperation = (
 		Effect.provide(
 			Effect.gen(function* () {
 				const selection = yield* readGatewaySelection(context, itemIndex);
+
+				if (selection.resource === 'ownPublication') {
+					return yield* executeOwnPublicationOperation(
+						context,
+						itemIndex,
+						gatewayUrl,
+						selection.operation,
+					);
+				}
 
 				if (selection.resource === 'note') {
 					return yield* executeNoteOperation(context, itemIndex, gatewayUrl, selection.operation);
