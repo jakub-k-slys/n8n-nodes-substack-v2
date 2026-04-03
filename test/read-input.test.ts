@@ -1,9 +1,13 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { Effect } from 'effect';
+import { Effect, Match } from 'effect';
 
-import { readGatewayInput, readGatewaySelection } from '../dist/nodes/SubstackGateway/runtime/read-input.js';
+import { decodeGatewayOperation } from '../dist/nodes/SubstackGateway/runtime/decode-operation.js';
+import {
+	makeNodeInputLayer,
+	NodeInput,
+} from '../dist/nodes/SubstackGateway/runtime/node-input.js';
 
 type TestContext = {
 	getNodeParameter: (name: string, itemIndex?: number, fallback?: unknown) => unknown;
@@ -14,14 +18,40 @@ const createContext = (parameters: Record<string, unknown>): TestContext => ({
 });
 
 describe('readGatewayInput', () => {
+	const readInput = (parameters: Record<string, unknown>, resource: string, operation: string) => {
+		const typedOperation = decodeGatewayOperation(resource, operation);
+		assert.equal(typedOperation._tag, 'Right');
+
+		return Effect.runPromise(
+			Effect.flatMap(NodeInput, (nodeInput) =>
+				Match.value(typedOperation.right).pipe(
+					Match.when({ _tag: 'OwnPublication' }, (typedOperation) =>
+						nodeInput.getOwnPublicationInput(typedOperation),
+					),
+					Match.when({ _tag: 'Note' }, (typedOperation) => nodeInput.getNoteInput(typedOperation)),
+					Match.when({ _tag: 'Draft' }, (typedOperation) => nodeInput.getDraftInput(typedOperation)),
+					Match.when({ _tag: 'Post' }, (typedOperation) => nodeInput.getPostInput(typedOperation)),
+					Match.when({ _tag: 'Profile' }, (typedOperation) =>
+						nodeInput.getProfileInput(typedOperation),
+					),
+					Match.exhaustive,
+				),
+			).pipe(Effect.provide(makeNodeInputLayer(createContext(parameters) as never, 0))),
+		);
+	};
+
 	it('should read resource and operation as strings', async () => {
 		const selection = await Effect.runPromise(
-			readGatewaySelection(
-				createContext({
-					resource: 'draft',
-					operation: 'createDraft',
-				}) as never,
-				0,
+			Effect.flatMap(NodeInput, (nodeInput) => nodeInput.getSelection).pipe(
+				Effect.provide(
+					makeNodeInputLayer(
+						createContext({
+							resource: 'draft',
+							operation: 'createDraft',
+						}) as never,
+						0,
+					),
+				),
 			),
 		);
 
@@ -32,18 +62,13 @@ describe('readGatewayInput', () => {
 	});
 
 	it('should read typed note creation input', async () => {
-		const input = await Effect.runPromise(
-			readGatewayInput(
-				createContext({
-					content: 'hello',
-					attachment: 'https://example.com/file.png',
-				}) as never,
-				0,
-				{
-					_tag: 'Note',
-					operation: 'createNote',
-				},
-			),
+		const input = await readInput(
+			{
+				content: 'hello',
+				attachment: 'https://example.com/file.png',
+			},
+			'note',
+			'createNote',
 		);
 
 		assert.deepEqual(input, {
@@ -54,18 +79,13 @@ describe('readGatewayInput', () => {
 	});
 
 	it('should normalize blank optional strings', async () => {
-		const input = await Effect.runPromise(
-			readGatewayInput(
-				createContext({
-					profileSlug: 'substack',
-					cursor: '   ',
-				}) as never,
-				0,
-				{
-					_tag: 'Profile',
-					operation: 'getProfileNotes',
-				},
-			),
+		const input = await readInput(
+			{
+				profileSlug: 'substack',
+				cursor: '   ',
+			},
+			'profile',
+			'getProfileNotes',
 		);
 
 		assert.deepEqual(input, {

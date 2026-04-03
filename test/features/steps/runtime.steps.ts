@@ -4,12 +4,15 @@ import * as HttpClient from '@effect/platform/HttpClient';
 import type * as ClientRequest from '@effect/platform/HttpClientRequest';
 import * as ClientResponse from '@effect/platform/HttpClientResponse';
 import { Given, Then, When } from '@cucumber/cucumber';
-import { Either, Effect } from 'effect';
+import { Either, Effect, Match } from 'effect';
 
 import { decodeGatewayOperation } from '../../../dist/nodes/SubstackGateway/runtime/decode-operation.js';
 import { makeGatewayClientLayer } from '../../../dist/nodes/SubstackGateway/runtime/gateway-client.js';
 import { executeGatewayRequest } from '../../../dist/nodes/SubstackGateway/runtime/execute-request.js';
-import { readGatewayInput } from '../../../dist/nodes/SubstackGateway/runtime/read-input.js';
+import {
+	makeNodeInputLayer,
+	NodeInput,
+} from '../../../dist/nodes/SubstackGateway/runtime/node-input.js';
 import { gatewayResultToJsonItems } from '../../../dist/nodes/SubstackGateway/runtime/to-json.js';
 
 type TestContext = {
@@ -103,7 +106,20 @@ When('I decode the gateway operation', function () {
 
 When('I read gateway input', async function () {
 	state.result = await Effect.runPromise(
-		readGatewayInput(state.context as never, 0, state.typedOperation),
+		Effect.flatMap(NodeInput, (nodeInput) =>
+			Match.value(state.typedOperation).pipe(
+				Match.when({ _tag: 'OwnPublication' }, (typedOperation) =>
+					nodeInput.getOwnPublicationInput(typedOperation),
+				),
+				Match.when({ _tag: 'Note' }, (typedOperation) => nodeInput.getNoteInput(typedOperation)),
+				Match.when({ _tag: 'Draft' }, (typedOperation) => nodeInput.getDraftInput(typedOperation)),
+				Match.when({ _tag: 'Post' }, (typedOperation) => nodeInput.getPostInput(typedOperation)),
+				Match.when({ _tag: 'Profile' }, (typedOperation) =>
+					nodeInput.getProfileInput(typedOperation),
+				),
+				Match.exhaustive,
+			),
+		).pipe(Effect.provide(makeNodeInputLayer(state.context as never, 0))),
 	);
 });
 
