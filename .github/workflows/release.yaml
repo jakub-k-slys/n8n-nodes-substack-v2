@@ -19,7 +19,7 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.N8N_NODES_SUBSTACK_V2_WRITE_TOKEN }}
 
       - uses: pnpm/action-setup@v4
 
@@ -42,4 +42,4 @@ jobs:
             @semantic-release/git
             @semantic-release/github
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.N8N_NODES_SUBSTACK_V2_WRITE_TOKEN }}
