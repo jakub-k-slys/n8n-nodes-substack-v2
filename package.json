@@ -41,8 +41,8 @@
 		],
 		"nodes": [
 			"dist/nodes/SubstackGateway/SubstackGateway.node.js",
-			"dist/nodes/SubstackFollowingFeedTrigger/SubstackFollowingFeedTrigger.node.js",
-			"dist/nodes/SubstackProfileFeedTrigger/SubstackProfileFeedTrigger.node.js"
+			"dist/nodes/SubstackGatewayFollowingFeed/SubstackGatewayFollowingFeed.node.js",
+			"dist/nodes/SubstackGatewayProfileFeed/SubstackGatewayProfileFeed.node.js"
 		]
 	},
 	"devDependencies": {

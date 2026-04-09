@@ -5,10 +5,10 @@ export default defineConfig({
 	entry: {
 		'credentials/SubstackGatewayApi.credentials': 'credentials/SubstackGatewayApi.credentials.ts',
 		'nodes/SubstackGateway/SubstackGateway.node': 'nodes/SubstackGateway/SubstackGateway.node.ts',
-		'nodes/SubstackFollowingFeedTrigger/SubstackFollowingFeedTrigger.node':
-			'nodes/SubstackFollowingFeedTrigger/SubstackFollowingFeedTrigger.node.ts',
-		'nodes/SubstackProfileFeedTrigger/SubstackProfileFeedTrigger.node':
-			'nodes/SubstackProfileFeedTrigger/SubstackProfileFeedTrigger.node.ts',
+		'nodes/SubstackGatewayFollowingFeed/SubstackGatewayFollowingFeed.node':
+			'nodes/SubstackGatewayFollowingFeed/SubstackGatewayFollowingFeed.node.ts',
+		'nodes/SubstackGatewayProfileFeed/SubstackGatewayProfileFeed.node':
+			'nodes/SubstackGatewayProfileFeed/SubstackGatewayProfileFeed.node.ts',
 	},
 	format: ['cjs'],
 	target: 'es2019',

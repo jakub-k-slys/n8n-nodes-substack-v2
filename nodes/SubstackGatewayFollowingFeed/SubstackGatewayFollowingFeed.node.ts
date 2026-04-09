@@ -18,19 +18,20 @@ import {
 	writeAtomFeedCheckpoint,
 } from '../shared/atom-feed';
 
-const getGatewayFeedUrl = (gatewayUrl: string, userName: string): string =>
-	`${gatewayUrl}/profiles/${encodeURIComponent(userName)}/feed`;
+const FOLLOWING_FEED_PATH = '/me/following/feed';
 
-export class SubstackProfileFeedTrigger implements INodeType {
+const getGatewayFeedUrl = (gatewayUrl: string): string => `${gatewayUrl}${FOLLOWING_FEED_PATH}`;
+
+export class SubstackGatewayFollowingFeed implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Profile Feed Trigger',
-		name: 'substackProfileFeedTrigger',
+		displayName: 'Substack Gateway Following Feed',
+		name: 'substackGatewayFollowingFeed',
 		icon: { light: 'file:../SubstackGateway/substackGateway.svg', dark: 'file:../SubstackGateway/substackGateway.dark.svg' },
 		group: ['trigger'],
 		version: 1,
-		description: 'Poll a profile Atom feed from Substack Gateway',
+		description: 'Poll the authenticated user following Atom feed from Substack Gateway',
 		defaults: {
-			name: 'Profile Feed Trigger',
+			name: 'Substack Gateway Following Feed',
 		},
 		polling: true,
 		inputs: [],
@@ -42,14 +43,6 @@ export class SubstackProfileFeedTrigger implements INodeType {
 			},
 		],
 		properties: [
-			{
-				displayName: 'User Name',
-				name: 'userName',
-				type: 'string',
-				required: true,
-				default: '',
-				description: 'The Substack profile user name to poll',
-			},
 			{
 				displayName: 'Emit Only New Items',
 				name: 'emitOnlyNewItems',
@@ -65,7 +58,6 @@ export class SubstackProfileFeedTrigger implements INodeType {
 		this: IPollFunctions,
 	): Promise<INodeExecutionData[][] | null> {
 		const credentials = await this.getCredentials('substackGatewayApi');
-		const userName = String(this.getNodeParameter('userName')).trim();
 		const decodedGatewayUrl = decodeInput(
 			GatewayUrlSchema,
 			String(credentials.gatewayUrl ?? '').replace(/\/+$/, ''),
@@ -75,14 +67,10 @@ export class SubstackProfileFeedTrigger implements INodeType {
 			throw new NodeOperationError(this.getNode(), 'Invalid Gateway URL credential');
 		}
 
-		if (userName.length === 0) {
-			throw new NodeOperationError(this.getNode(), 'User Name is required');
-		}
-
 		const pollState = this.getWorkflowStaticData('node');
 		const emitOnlyNewItems = this.getNodeParameter('emitOnlyNewItems') as boolean;
 		const data = await Effect.runPromise(
-			Effect.flatMap(fetchAtomFeed(this, getGatewayFeedUrl(decodedGatewayUrl.right, userName)), parseAtomFeed),
+			Effect.flatMap(fetchAtomFeed(this, getGatewayFeedUrl(decodedGatewayUrl.right)), parseAtomFeed),
 		);
 
 		if (this.getMode() === 'manual') {
