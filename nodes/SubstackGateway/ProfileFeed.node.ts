@@ -21,7 +21,7 @@ import {
 const getGatewayFeedUrl = (gatewayUrl: string, userName: string): string =>
 	`${gatewayUrl}/profiles/${encodeURIComponent(userName)}/feed`;
 
-export class SubstackGatewayProfileFeed implements INodeType {
+export class ProfileFeed implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Substack Gateway Profile Feed',
 		name: 'substackGatewayProfileFeed',

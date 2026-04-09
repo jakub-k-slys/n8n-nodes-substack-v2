@@ -2,13 +2,13 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import { SubstackGatewayApi } from '../../dist/credentials/SubstackGatewayApi.credentials.js';
-import { SubstackGatewayFollowingFeed } from '../../dist/nodes/SubstackGateway/FollowingFeed.node.js';
-import { SubstackGatewayProfileFeed } from '../../dist/nodes/SubstackGateway/ProfileFeed.node.js';
-import { SubstackGateway } from '../../dist/nodes/SubstackGateway/Gateway.node.js';
+import { FollowingFeed } from '../../dist/nodes/SubstackGateway/FollowingFeed.node.js';
+import { Gateway } from '../../dist/nodes/SubstackGateway/Gateway.node.js';
+import { ProfileFeed } from '../../dist/nodes/SubstackGateway/ProfileFeed.node.js';
 
 describe('package build smoke', () => {
 	it('should expose the built node metadata', () => {
-		const node = new SubstackGateway();
+		const node = new Gateway();
 
 		assert.equal(node.description.name, 'substackGateway');
 		assert.equal(node.description.displayName, 'Substack Gateway');
@@ -30,7 +30,7 @@ describe('package build smoke', () => {
 	});
 
 	it('should expose the built following feed trigger metadata', () => {
-		const node = new SubstackGatewayFollowingFeed();
+		const node = new FollowingFeed();
 
 		assert.equal(node.description.name, 'substackGatewayFollowingFeed');
 		assert.equal(node.description.displayName, 'Substack Gateway Following Feed');
@@ -38,7 +38,7 @@ describe('package build smoke', () => {
 	});
 
 	it('should expose the built profile feed trigger metadata', () => {
-		const node = new SubstackGatewayProfileFeed();
+		const node = new ProfileFeed();
 
 		assert.equal(node.description.name, 'substackGatewayProfileFeed');
 		assert.equal(node.description.displayName, 'Substack Gateway Profile Feed');

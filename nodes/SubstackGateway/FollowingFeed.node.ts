@@ -22,7 +22,7 @@ const FOLLOWING_FEED_PATH = '/me/following/feed';
 
 const getGatewayFeedUrl = (gatewayUrl: string): string => `${gatewayUrl}${FOLLOWING_FEED_PATH}`;
 
-export class SubstackGatewayFollowingFeed implements INodeType {
+export class FollowingFeed implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Substack Gateway Following Feed',
 		name: 'substackGatewayFollowingFeed',
