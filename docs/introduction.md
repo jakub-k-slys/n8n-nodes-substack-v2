@@ -16,7 +16,7 @@ The package supports:
 
 ### n8n Node
 
-The node is implemented in [`nodes/SubstackGateway/SubstackGateway.node.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/SubstackGateway.node.ts).
+The node is implemented in [`nodes/SubstackGateway/Gateway.node.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/Gateway.node.ts).
 
 Current resources:
 

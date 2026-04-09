@@ -8,6 +8,7 @@ import { Effect } from 'effect';
 
 import { makeGatewayClientLayer } from '../nodes/SubstackGateway/runtime/live/gateway-client.ts';
 import { executeGatewayRequest } from '../nodes/SubstackGateway/runtime/execute-request.ts';
+import { fetchAtomFeed } from '../nodes/shared/atom-feed/index.ts';
 
 const textDecoder = new TextDecoder();
 
@@ -110,6 +111,53 @@ describe('gateway HttpClient layer', () => {
 			returnFullResponse: true,
 			method: 'GET',
 			url: 'http://localhost:5001/api/v1/me',
+			},
+		);
+	});
+
+	it('should reuse the authenticated gateway transport for Atom feed requests', async () => {
+		const calls: Array<{
+			credentialName: string;
+			request: unknown;
+			self: unknown;
+		}> = [];
+		const context = {
+			helpers: {
+				httpRequestWithAuthentication(this: unknown, credentialName: string, request: unknown) {
+					calls.push({ credentialName, request, self: this });
+					return Promise.resolve({
+						body: '<feed xmlns="http://www.w3.org/2005/Atom"></feed>',
+						headers: { 'content-type': 'application/atom+xml' },
+						statusCode: 200,
+					});
+				},
+			},
+		};
+
+		const response = await Effect.runPromise(
+			fetchAtomFeed(context as never, 'http://localhost:5001/api/v1/me/following/feed'),
+		);
+
+		assert.equal(response, '<feed xmlns="http://www.w3.org/2005/Atom"></feed>');
+		assert.equal(calls.length, 1);
+		assert.equal(calls[0].credentialName, 'substackGatewayApi');
+		assert.equal(calls[0].self, context);
+		assert.deepEqual(
+			{
+				json: (calls[0].request as Record<string, unknown>).json,
+				returnFullResponse: (calls[0].request as Record<string, unknown>).returnFullResponse,
+				method: (calls[0].request as Record<string, unknown>).method,
+				url: (calls[0].request as Record<string, unknown>).url,
+				headers: (calls[0].request as Record<string, unknown>).headers,
+			},
+			{
+				json: false,
+				returnFullResponse: true,
+				method: 'GET',
+				url: 'http://localhost:5001/api/v1/me/following/feed',
+				headers: {
+					accept: 'application/atom+xml, application/xml, text/xml;q=0.9, */*;q=0.8',
+				},
 			},
 		);
 	});

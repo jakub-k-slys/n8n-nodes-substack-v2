@@ -17,7 +17,7 @@ import { GatewayUrlSchema } from './schema';
 import { decodeInput } from './runtime/decode/shared';
 import { runGatewayOperation } from './runtime/execute';
 
-export class SubstackGateway implements INodeType {
+export class Gateway implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Substack Gateway',
 		name: 'substackGateway',

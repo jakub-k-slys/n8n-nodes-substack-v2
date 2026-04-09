@@ -40,13 +40,16 @@
 			"dist/credentials/SubstackGatewayApi.credentials.js"
 		],
 		"nodes": [
-			"dist/nodes/SubstackGateway/SubstackGateway.node.js"
+			"dist/nodes/SubstackGateway/Gateway.node.js",
+			"dist/nodes/SubstackGateway/FollowingFeed.node.js",
+			"dist/nodes/SubstackGateway/ProfileFeed.node.js"
 		]
 	},
 	"devDependencies": {
 		"@cucumber/cucumber": "^12.7.0",
+		"@eslint/js": "^10.0.1",
 		"@n8n/node-cli": "*",
-		"eslint": "10.2.0",
+		"eslint": "9.32.0",
 		"n8n": "^2.14.2",
 		"prettier": "3.8.1",
 		"release-it": "^19.0.4",
@@ -60,6 +63,7 @@
 	},
 	"dependencies": {
 		"@effect/platform": "^0.96.0",
-		"effect": "^3.21.0"
+		"effect": "^3.21.0",
+		"fast-xml-parser": "^5.5.11"
 	}
 }

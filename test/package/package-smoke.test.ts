@@ -2,11 +2,13 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import { SubstackGatewayApi } from '../../dist/credentials/SubstackGatewayApi.credentials.js';
-import { SubstackGateway } from '../../dist/nodes/SubstackGateway/SubstackGateway.node.js';
+import { FollowingFeed } from '../../dist/nodes/SubstackGateway/FollowingFeed.node.js';
+import { Gateway } from '../../dist/nodes/SubstackGateway/Gateway.node.js';
+import { ProfileFeed } from '../../dist/nodes/SubstackGateway/ProfileFeed.node.js';
 
 describe('package build smoke', () => {
 	it('should expose the built node metadata', () => {
-		const node = new SubstackGateway();
+		const node = new Gateway();
 
 		assert.equal(node.description.name, 'substackGateway');
 		assert.equal(node.description.displayName, 'Substack Gateway');
@@ -25,5 +27,21 @@ describe('package build smoke', () => {
 		assert.equal(credential.displayName, 'Substack Gateway API');
 		assert.equal(credential.properties[0]?.name, 'gatewayUrl');
 		assert.equal(credential.properties[1]?.name, 'gatewayToken');
+	});
+
+	it('should expose the built following feed trigger metadata', () => {
+		const node = new FollowingFeed();
+
+		assert.equal(node.description.name, 'substackGatewayFollowingFeed');
+		assert.equal(node.description.displayName, 'Substack Gateway Following Feed');
+		assert.equal(node.description.polling, true);
+	});
+
+	it('should expose the built profile feed trigger metadata', () => {
+		const node = new ProfileFeed();
+
+		assert.equal(node.description.name, 'substackGatewayProfileFeed');
+		assert.equal(node.description.displayName, 'Substack Gateway Profile Feed');
+		assert.equal(node.description.polling, true);
 	});
 });

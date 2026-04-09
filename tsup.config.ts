@@ -4,7 +4,9 @@ export default defineConfig({
 	tsconfig: 'tsconfig.tsup.json',
 	entry: {
 		'credentials/SubstackGatewayApi.credentials': 'credentials/SubstackGatewayApi.credentials.ts',
-		'nodes/SubstackGateway/SubstackGateway.node': 'nodes/SubstackGateway/SubstackGateway.node.ts',
+		'nodes/SubstackGateway/Gateway.node': 'nodes/SubstackGateway/Gateway.node.ts',
+		'nodes/SubstackGateway/FollowingFeed.node': 'nodes/SubstackGateway/FollowingFeed.node.ts',
+		'nodes/SubstackGateway/ProfileFeed.node': 'nodes/SubstackGateway/ProfileFeed.node.ts',
 	},
 	format: ['cjs'],
 	target: 'es2019',

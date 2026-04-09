@@ -5,7 +5,9 @@ const projectRoot = process.cwd();
 
 const filesToCopy = [
 	'package.json',
-	'nodes/SubstackGateway/SubstackGateway.node.json',
+	'nodes/SubstackGateway/Gateway.node.json',
+	'nodes/SubstackGateway/FollowingFeed.node.json',
+	'nodes/SubstackGateway/ProfileFeed.node.json',
 	'nodes/SubstackGateway/substackGateway.svg',
 	'nodes/SubstackGateway/substackGateway.dark.svg',
 ];

@@ -3,6 +3,7 @@ import * as ClientError from '@effect/platform/HttpClientError';
 import { Effect, Layer } from 'effect';
 import type { IExecuteFunctions } from 'n8n-workflow';
 
+import { executeAuthenticatedGatewayRequest } from '../../../shared/gateway-transport';
 import { toRequestOptions } from './gateway-request';
 import { toClientResponse } from './gateway-response';
 
@@ -15,20 +16,10 @@ const makeExecute = (context: IExecuteFunctions) =>
 			}),
 			Effect.flatMap(() => toRequestOptions(request, url)),
 			Effect.flatMap((requestOptions) =>
-				Effect.tryPromise({
-					try: () =>
-						context.helpers.httpRequestWithAuthentication.call(
-							context,
-							'substackGatewayApi',
-							requestOptions,
-						),
-					catch: (cause) =>
-						new ClientError.RequestError({
-							request,
-							reason: 'Transport',
-							cause,
-							description: cause instanceof Error ? cause.message : 'Gateway request failed',
-						}),
+				executeAuthenticatedGatewayRequest(context, requestOptions, {
+					request,
+					method: request.method,
+					url: url.toString(),
 				}),
 			),
 			Effect.map((result) => toClientResponse(request, result)),

@@ -6,14 +6,14 @@ The package is organized around the `Substack Gateway` n8n node and a resource-o
 
 Key paths:
 
-- [`nodes/SubstackGateway/SubstackGateway.node.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/SubstackGateway.node.ts)
+- [`nodes/SubstackGateway/Gateway.node.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/Gateway.node.ts)
 - [`nodes/SubstackGateway/runtime`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/runtime)
 - [`nodes/SubstackGateway/domain`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/domain)
 - [`nodes/SubstackGateway/schema`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/schema)
 
 ## Node Layer
 
-`SubstackGateway.node.ts` is the n8n-facing adapter:
+`Gateway.node.ts` is the n8n-facing adapter:
 
 - loads credentials
 - validates `Gateway URL`
@@ -54,4 +54,4 @@ Host-specific adapters live under [`runtime/live`](/Users/jakubslys/n8n-nodes-su
 The package compiles to `dist/`, and `package.json` points n8n to:
 
 - `dist/credentials/SubstackGatewayApi.credentials.js`
-- `dist/nodes/SubstackGateway/SubstackGateway.node.js`
+- `dist/nodes/SubstackGateway/Gateway.node.js`
