@@ -115,6 +115,40 @@ describe('gateway HttpClient layer', () => {
 		);
 	});
 
+	it('should support empty 204 responses from the live gateway client', async () => {
+		const response = await Effect.runPromise(
+			Effect.provide(
+				executeGatewayRequest({
+					method: 'PUT',
+					url: 'http://localhost:5001/api/v1/notes/123/like',
+					responseMode: 'empty',
+					emptyResponseBody: {
+						success: true,
+						noteId: 123,
+						liked: true,
+					},
+				}),
+				makeGatewayClientLayer({
+					helpers: {
+						httpRequestWithAuthentication() {
+							return Promise.resolve({
+								body: '',
+								headers: {},
+								statusCode: 204,
+							});
+						},
+					},
+				} as never),
+			),
+		);
+
+		assert.deepEqual(response, {
+			success: true,
+			noteId: 123,
+			liked: true,
+		});
+	});
+
 	it('should reuse the authenticated gateway transport for Atom feed requests', async () => {
 		const calls: Array<{
 			credentialName: string;

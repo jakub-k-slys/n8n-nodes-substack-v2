@@ -13,6 +13,8 @@ const toResponseBody = (body: unknown) => {
 	return JSON.stringify(body);
 };
 
+const hasBody = (statusCode: number) => ![204, 205, 304].includes(statusCode);
+
 export const toClientResponse = (
 	request: HttpClientRequest.HttpClientRequest,
 	result: unknown,
@@ -39,7 +41,7 @@ export const toClientResponse = (
 
 	return ClientResponse.fromWeb(
 		request,
-		new Response(toResponseBody(response.body), {
+		new Response(hasBody(response.statusCode) ? toResponseBody(response.body) : null, {
 			status: response.statusCode,
 			statusText: response.statusMessage,
 			headers,
