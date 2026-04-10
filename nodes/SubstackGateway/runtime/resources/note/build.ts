@@ -29,5 +29,17 @@ export const buildNoteRequest = (
 			responseMode: 'empty',
 			emptyResponseBody: { success: true, noteId: command.noteId },
 		}) satisfies GatewayHttpRequest),
+		Match.when({ _tag: 'Like' }, (command) => ({
+			method: 'PUT',
+			url: `${gatewayUrl}/notes/${command.noteId}/like`,
+			responseMode: 'empty',
+			emptyResponseBody: { success: true, noteId: command.noteId, liked: true },
+		}) satisfies GatewayHttpRequest),
+		Match.when({ _tag: 'Unlike' }, (command) => ({
+			method: 'DELETE',
+			url: `${gatewayUrl}/notes/${command.noteId}/like`,
+			responseMode: 'empty',
+			emptyResponseBody: { success: true, noteId: command.noteId, liked: false },
+		}) satisfies GatewayHttpRequest),
 		Match.exhaustive,
 	);

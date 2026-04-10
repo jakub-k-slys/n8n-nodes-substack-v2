@@ -6,8 +6,9 @@ import {
 	NoteCreateResponseSchema,
 	NoteDeleteResponseSchema,
 	NoteGetResponseSchema,
+	NoteLikeResponseSchema,
 } from '../../../schema';
-import { toCreatedNote, toDeletedNote, toGatewayNote } from '../../decode-response/map';
+import { toCreatedNote, toDeletedNote, toGatewayNote, toLikedNote } from '../../decode-response/map';
 import { decodeResponseSchema } from '../../decode-response/shared';
 
 export const decodeNoteResponse = (
@@ -31,6 +32,18 @@ export const decodeNoteResponse = (
 			Either.map(decodeResponseSchema(NoteDeleteResponseSchema, response), (item) => ({
 				_tag: 'Note',
 				result: { _tag: 'Deleted', item: toDeletedNote(item) },
+			}) satisfies GatewayResult),
+		),
+		Match.when({ _tag: 'Like' }, () =>
+			Either.map(decodeResponseSchema(NoteLikeResponseSchema, response), (item) => ({
+				_tag: 'Note',
+				result: { _tag: 'Liked', item: toLikedNote(item) },
+			}) satisfies GatewayResult),
+		),
+		Match.when({ _tag: 'Unlike' }, () =>
+			Either.map(decodeResponseSchema(NoteLikeResponseSchema, response), (item) => ({
+				_tag: 'Note',
+				result: { _tag: 'Unliked', item: toLikedNote(item) },
 			}) satisfies GatewayResult),
 		),
 		Match.exhaustive,

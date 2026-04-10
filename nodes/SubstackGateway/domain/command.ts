@@ -17,7 +17,9 @@ export type OwnPublicationCommand =
 export type NoteCommand =
 	| { readonly _tag: 'Create'; readonly content: string; readonly attachment?: string }
 	| { readonly _tag: 'Get'; readonly noteId: NoteId }
-	| { readonly _tag: 'Delete'; readonly noteId: NoteId };
+	| { readonly _tag: 'Delete'; readonly noteId: NoteId }
+	| { readonly _tag: 'Like'; readonly noteId: NoteId }
+	| { readonly _tag: 'Unlike'; readonly noteId: NoteId };
 
 export type DraftCommand =
 	| { readonly _tag: 'List' }
@@ -39,7 +41,9 @@ export type DraftCommand =
 
 export type PostCommand =
 	| { readonly _tag: 'Get'; readonly postId: PostId }
-	| { readonly _tag: 'GetComments'; readonly postId: PostId };
+	| { readonly _tag: 'GetComments'; readonly postId: PostId }
+	| { readonly _tag: 'Like'; readonly postId: PostId }
+	| { readonly _tag: 'Unlike'; readonly postId: PostId };
 
 export type ProfileCommand =
 	| { readonly _tag: 'Get'; readonly profileSlug: ProfileSlug }

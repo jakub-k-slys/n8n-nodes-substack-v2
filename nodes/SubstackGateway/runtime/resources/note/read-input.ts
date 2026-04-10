@@ -28,6 +28,14 @@ export const readNoteInput = (
 					_tag: 'deleteNote' as const,
 					noteId: context.getNodeParameter('noteId', itemIndex),
 				})),
+				Match.when('likeNote', () => ({
+					_tag: 'likeNote' as const,
+					noteId: context.getNodeParameter('noteId', itemIndex),
+				})),
+				Match.when('unlikeNote', () => ({
+					_tag: 'unlikeNote' as const,
+					noteId: context.getNodeParameter('noteId', itemIndex),
+				})),
 				Match.exhaustive,
 			),
 		catch: unexpectedError,

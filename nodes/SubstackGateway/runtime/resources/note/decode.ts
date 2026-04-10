@@ -35,5 +35,21 @@ export const decodeNoteCommand = (
 				(input) => ({ _tag: 'Delete', ...input }) as const,
 			),
 		),
+		Match.when({ _tag: 'likeNote' }, ({ noteId }) =>
+			Either.map(
+				decodeInput(NoteIdInputSchema, {
+					noteId,
+				}),
+				(input) => ({ _tag: 'Like', ...input }) as const,
+			),
+		),
+		Match.when({ _tag: 'unlikeNote' }, ({ noteId }) =>
+			Either.map(
+				decodeInput(NoteIdInputSchema, {
+					noteId,
+				}),
+				(input) => ({ _tag: 'Unlike', ...input }) as const,
+			),
+		),
 		Match.exhaustive,
 	);

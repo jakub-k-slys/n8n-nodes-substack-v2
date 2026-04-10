@@ -10,3 +10,9 @@ export const NoteDeleteResponseSchema = Schema.Struct({
 	success: Schema.Boolean,
 	noteId: Schema.Number,
 });
+
+export const NoteLikeResponseSchema = Schema.Struct({
+	success: Schema.Boolean,
+	noteId: Schema.Number,
+	liked: Schema.Boolean,
+});

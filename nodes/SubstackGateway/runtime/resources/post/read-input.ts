@@ -22,6 +22,14 @@ export const readPostInput = (
 					_tag: 'getPostComments' as const,
 					postId: context.getNodeParameter('postId', itemIndex),
 				})),
+				Match.when('likePost', () => ({
+					_tag: 'likePost' as const,
+					postId: context.getNodeParameter('postId', itemIndex),
+				})),
+				Match.when('unlikePost', () => ({
+					_tag: 'unlikePost' as const,
+					postId: context.getNodeParameter('postId', itemIndex),
+				})),
 				Match.exhaustive,
 			),
 		catch: unexpectedError,

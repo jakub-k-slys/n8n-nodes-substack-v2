@@ -85,4 +85,59 @@ describe('executePostOperation', () => {
 			},
 		});
 	});
+
+	it('should execute a post unlike pipeline', async () => {
+		let capturedUrl: string | undefined;
+		let capturedMethod: string | undefined;
+
+		const result = await Effect.runPromise(
+			Effect.provideService(
+				Effect.provideService(
+					executePostOperation(0, 'http://localhost:5001/api/v1' as never, 'unlikePost'),
+					NodeInput,
+					{
+						getSelection: Effect.die('selection is not used in the post executor test'),
+						getOwnPublicationInput: () =>
+							Effect.die('own publication input is not used in the post executor test'),
+						getNoteInput: () => Effect.die('note input is not used in the post executor test'),
+						getDraftInput: () => Effect.die('draft input is not used in the post executor test'),
+						getPostInput: () =>
+							Effect.succeed({
+								_tag: 'unlikePost',
+								postId: 42,
+							}),
+						getProfileInput: () =>
+							Effect.die('profile input is not used in the post executor test'),
+					},
+				),
+				HttpClient.HttpClient,
+				{
+					...HttpClient.make(() =>
+						Effect.die('execute should be overridden by the test service'),
+					),
+					execute: (request) => {
+						capturedUrl = request.url;
+						capturedMethod = request.method;
+						return Effect.succeed(
+							ClientResponse.fromWeb(request, new Response(null, { status: 204 })),
+						);
+					},
+				},
+			),
+		);
+
+		assert.equal(capturedMethod, 'DELETE');
+		assert.equal(capturedUrl, 'http://localhost:5001/api/v1/posts/42/like');
+		assert.deepEqual(result, {
+			_tag: 'Post',
+			result: {
+				_tag: 'Unliked',
+				item: {
+					success: true,
+					postId: 42,
+					liked: false,
+				},
+			},
+		});
+	});
 });

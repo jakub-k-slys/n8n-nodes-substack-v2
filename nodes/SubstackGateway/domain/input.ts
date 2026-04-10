@@ -9,7 +9,9 @@ export type OwnPublicationInput = {
 export type NoteInput =
 	| { readonly _tag: 'createNote'; readonly content: unknown; readonly attachment?: string }
 	| { readonly _tag: 'getNote'; readonly noteId: unknown }
-	| { readonly _tag: 'deleteNote'; readonly noteId: unknown };
+	| { readonly _tag: 'deleteNote'; readonly noteId: unknown }
+	| { readonly _tag: 'likeNote'; readonly noteId: unknown }
+	| { readonly _tag: 'unlikeNote'; readonly noteId: unknown };
 
 export type DraftInput =
 	| { readonly _tag: 'listDrafts' }
@@ -31,7 +33,9 @@ export type DraftInput =
 
 export type PostInput =
 	| { readonly _tag: 'getPost'; readonly postId: unknown }
-	| { readonly _tag: 'getPostComments'; readonly postId: unknown };
+	| { readonly _tag: 'getPostComments'; readonly postId: unknown }
+	| { readonly _tag: 'likePost'; readonly postId: unknown }
+	| { readonly _tag: 'unlikePost'; readonly postId: unknown };
 
 export type ProfileInput =
 	| { readonly _tag: 'getProfile'; readonly profileSlug: unknown }

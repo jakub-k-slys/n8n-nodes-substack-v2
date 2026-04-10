@@ -19,5 +19,17 @@ export const buildPostRequest = (
 			url: `${gatewayUrl}/posts/${command.postId}/comments`,
 			responseMode: 'items',
 		}) satisfies GatewayHttpRequest),
+		Match.when({ _tag: 'Like' }, (command) => ({
+			method: 'PUT',
+			url: `${gatewayUrl}/posts/${command.postId}/like`,
+			responseMode: 'empty',
+			emptyResponseBody: { success: true, postId: command.postId, liked: true },
+		}) satisfies GatewayHttpRequest),
+		Match.when({ _tag: 'Unlike' }, (command) => ({
+			method: 'DELETE',
+			url: `${gatewayUrl}/posts/${command.postId}/like`,
+			responseMode: 'empty',
+			emptyResponseBody: { success: true, postId: command.postId, liked: false },
+		}) satisfies GatewayHttpRequest),
 		Match.exhaustive,
 	);

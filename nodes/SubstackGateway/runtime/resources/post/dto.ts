@@ -1,7 +1,7 @@
 import type { IDataObject } from 'n8n-workflow';
 import * as Schema from 'effect/Schema';
 
-import type { GatewayComment, GatewayPost } from '../../../domain/model';
+import type { GatewayComment, GatewayPost, LikedPost } from '../../../domain/model';
 import { encodeJson, optional } from '../../serialize/shared';
 
 const JsonPostSchema = Schema.Struct({
@@ -28,6 +28,12 @@ const JsonCommentSchema = Schema.Struct({
 	isAdmin: Schema.Boolean,
 });
 
+const JsonLikedPostSchema = Schema.Struct({
+	success: Schema.Boolean,
+	postId: Schema.Number,
+	liked: Schema.Boolean,
+});
+
 export const toJsonPost = (post: GatewayPost): IDataObject => ({
 	...encodeJson(JsonPostSchema)({
 		id: post.id,
@@ -48,4 +54,8 @@ export const toJsonPost = (post: GatewayPost): IDataObject => ({
 
 export const toJsonComment = (comment: GatewayComment): IDataObject => ({
 	...encodeJson(JsonCommentSchema)(comment),
+});
+
+export const toJsonLikedPost = (post: LikedPost): IDataObject => ({
+	...encodeJson(JsonLikedPostSchema)(post),
 });

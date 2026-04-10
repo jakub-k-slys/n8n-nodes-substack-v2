@@ -73,4 +73,59 @@ describe('executeNoteOperation', () => {
 			},
 		});
 	});
+
+	it('should execute a note like pipeline', async () => {
+		let capturedUrl: string | undefined;
+		let capturedMethod: string | undefined;
+
+		const result = await Effect.runPromise(
+			Effect.provideService(
+				Effect.provideService(
+					executeNoteOperation(0, 'http://localhost:5001/api/v1' as never, 'likeNote'),
+					NodeInput,
+					{
+						getSelection: Effect.die('selection is not used in the note executor test'),
+						getOwnPublicationInput: () =>
+							Effect.die('own publication input is not used in the note executor test'),
+						getNoteInput: () =>
+							Effect.succeed({
+								_tag: 'likeNote',
+								noteId: 123,
+							}),
+						getDraftInput: () => Effect.die('draft input is not used in the note executor test'),
+						getPostInput: () => Effect.die('post input is not used in the note executor test'),
+						getProfileInput: () =>
+							Effect.die('profile input is not used in the note executor test'),
+					},
+				),
+				HttpClient.HttpClient,
+				{
+					...HttpClient.make(() =>
+						Effect.die('execute should be overridden by the test service'),
+					),
+					execute: (request) => {
+						capturedUrl = request.url;
+						capturedMethod = request.method;
+						return Effect.succeed(
+							ClientResponse.fromWeb(request, new Response(null, { status: 204 })),
+						);
+					},
+				},
+			),
+		);
+
+		assert.equal(capturedMethod, 'PUT');
+		assert.equal(capturedUrl, 'http://localhost:5001/api/v1/notes/123/like');
+		assert.deepEqual(result, {
+			_tag: 'Note',
+			result: {
+				_tag: 'Liked',
+				item: {
+					success: true,
+					noteId: 123,
+					liked: true,
+				},
+			},
+		});
+	});
 });

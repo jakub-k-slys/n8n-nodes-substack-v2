@@ -43,6 +43,20 @@ describe('resource input readers', () => {
 		});
 	});
 
+	it('should read note unlike parameters', async () => {
+		const input = await Effect.runPromise(
+			readNoteInput(createContext({ noteId: 51 }) as never, 0, {
+				_tag: 'Note',
+				operation: 'unlikeNote',
+			}),
+		);
+
+		assert.deepEqual(input, {
+			_tag: 'unlikeNote',
+			noteId: 51,
+		});
+	});
+
 	it('should read draft update payloads', async () => {
 		const input = await Effect.runPromise(
 			readDraftInput(
@@ -77,6 +91,20 @@ describe('resource input readers', () => {
 		assert.deepEqual(input, {
 			_tag: 'getPostComments',
 			postId: 99,
+		});
+	});
+
+	it('should read post like operations', async () => {
+		const input = await Effect.runPromise(
+			readPostInput(createContext({ postId: 100 }) as never, 0, {
+				_tag: 'Post',
+				operation: 'likePost',
+			}),
+		);
+
+		assert.deepEqual(input, {
+			_tag: 'likePost',
+			postId: 100,
 		});
 	});
 

@@ -91,4 +91,19 @@ describe('readGatewayInput', () => {
 			profileSlug: 'substack',
 		});
 	});
+
+	it('should read typed post like input', async () => {
+		const input = await readInput(
+			{
+				postId: 88,
+			},
+			'post',
+			'likePost',
+		);
+
+		assert.deepEqual(input, {
+			_tag: 'likePost',
+			postId: 88,
+		});
+	});
 });

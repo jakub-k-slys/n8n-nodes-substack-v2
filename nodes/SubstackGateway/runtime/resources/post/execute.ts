@@ -21,7 +21,11 @@ export const executePostOperation = (
 		operation,
 		logLabel: 'post',
 		decodeOperation: (operation) =>
-			decodeTaggedOperation<'getPost' | 'getPostComments'>('post', 'Post', operation),
+			decodeTaggedOperation<'getPost' | 'getPostComments' | 'likePost' | 'unlikePost'>(
+				'post',
+				'Post',
+				operation,
+			),
 		readInput: (nodeInput, operation) =>
 			nodeInput.getPostInput({
 				_tag: 'Post',

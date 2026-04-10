@@ -11,6 +11,8 @@ import type {
 	GatewayPost,
 	GatewayPostSummary,
 	GatewayProfile,
+	LikedNote,
+	LikedPost,
 } from './model';
 
 export type OwnPublicationResult =
@@ -22,7 +24,9 @@ export type OwnPublicationResult =
 export type NoteResult =
 	| { readonly _tag: 'Created'; readonly item: CreatedNote }
 	| { readonly _tag: 'Fetched'; readonly item: GatewayNote }
-	| { readonly _tag: 'Deleted'; readonly item: DeletedNote };
+	| { readonly _tag: 'Deleted'; readonly item: DeletedNote }
+	| { readonly _tag: 'Liked'; readonly item: LikedNote }
+	| { readonly _tag: 'Unliked'; readonly item: LikedNote };
 
 export type DraftResult =
 	| { readonly _tag: 'List'; readonly items: ReadonlyArray<GatewayDraftSummary> }
@@ -33,7 +37,9 @@ export type DraftResult =
 
 export type PostResult =
 	| { readonly _tag: 'Fetched'; readonly item: GatewayPost }
-	| { readonly _tag: 'Comments'; readonly items: ReadonlyArray<GatewayComment> };
+	| { readonly _tag: 'Comments'; readonly items: ReadonlyArray<GatewayComment> }
+	| { readonly _tag: 'Liked'; readonly item: LikedPost }
+	| { readonly _tag: 'Unliked'; readonly item: LikedPost };
 
 export type ProfileResult =
 	| { readonly _tag: 'Fetched'; readonly item: GatewayProfile }

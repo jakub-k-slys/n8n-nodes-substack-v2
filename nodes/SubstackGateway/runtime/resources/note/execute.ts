@@ -20,7 +20,10 @@ export const executeNoteOperation = (
 		gatewayUrl,
 		operation,
 		logLabel: 'note',
-		decodeOperation: (operation) => decodeTaggedOperation<'createNote' | 'getNote' | 'deleteNote'>('note', 'Note', operation),
+		decodeOperation: (operation) =>
+			decodeTaggedOperation<
+				'createNote' | 'getNote' | 'deleteNote' | 'likeNote' | 'unlikeNote'
+			>('note', 'Note', operation),
 		readInput: (nodeInput, operation) =>
 			nodeInput.getNoteInput({
 				_tag: 'Note',

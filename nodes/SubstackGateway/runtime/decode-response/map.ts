@@ -25,6 +25,8 @@ import type {
 	GatewayPost,
 	GatewayPostSummary,
 	GatewayProfile,
+	LikedNote,
+	LikedPost,
 } from '../../domain/model';
 
 export const toGatewayProfile = (profile: ProfileResponse): GatewayProfile => ({
@@ -110,4 +112,8 @@ export const toCreatedDraft = (draft: CreateDraftResponse): CreatedDraft => ({
 
 export const toDeletedNote = (note: DeletedNote): DeletedNote => note;
 
+export const toLikedNote = (note: LikedNote): LikedNote => note;
+
 export const toDeletedDraft = (draft: DeletedDraft): DeletedDraft => draft;
+
+export const toLikedPost = (post: LikedPost): LikedPost => post;

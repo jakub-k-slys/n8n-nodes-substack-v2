@@ -10,7 +10,7 @@ export const noteFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['note'],
-				operation: ['deleteNote', 'getNote'],
+				operation: ['deleteNote', 'getNote', 'likeNote', 'unlikeNote'],
 			},
 		},
 		description: 'The numeric ID of the note',

@@ -1,7 +1,13 @@
 import type { IDataObject } from 'n8n-workflow';
 import * as Schema from 'effect/Schema';
 
-import type { CreatedNote, DeletedNote, GatewayNote, GatewayNoteAuthor } from '../../../domain/model';
+import type {
+	CreatedNote,
+	DeletedNote,
+	GatewayNote,
+	GatewayNoteAuthor,
+	LikedNote,
+} from '../../../domain/model';
 import { encodeJson } from '../../serialize/shared';
 
 const JsonNoteAuthorSchema = Schema.Struct({
@@ -28,6 +34,12 @@ const JsonDeletedNoteSchema = Schema.Struct({
 	noteId: Schema.Number,
 });
 
+const JsonLikedNoteSchema = Schema.Struct({
+	success: Schema.Boolean,
+	noteId: Schema.Number,
+	liked: Schema.Boolean,
+});
+
 export const toJsonNoteAuthor = (author: GatewayNoteAuthor): IDataObject => ({
 	...encodeJson(JsonNoteAuthorSchema)(author),
 });
@@ -45,4 +57,8 @@ export const toJsonCreatedNote = (note: CreatedNote): IDataObject => ({
 
 export const toJsonDeletedNote = (note: DeletedNote): IDataObject => ({
 	...encodeJson(JsonDeletedNoteSchema)(note),
+});
+
+export const toJsonLikedNote = (note: LikedNote): IDataObject => ({
+	...encodeJson(JsonLikedNoteSchema)(note),
 });

@@ -79,9 +79,21 @@ export type CreatedDraft = {
 	readonly uuid: string;
 };
 
+export type LikedNote = {
+	readonly success: boolean;
+	readonly noteId: number;
+	readonly liked: boolean;
+};
+
 export type DeletedNote = {
 	readonly success: boolean;
 	readonly noteId: number;
+};
+
+export type LikedPost = {
+	readonly success: boolean;
+	readonly postId: number;
+	readonly liked: boolean;
 };
 
 export type DeletedDraft = {

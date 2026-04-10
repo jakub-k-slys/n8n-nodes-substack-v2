@@ -7,12 +7,12 @@ import { decodeGatewayOperation } from '../nodes/SubstackGateway/runtime/decode-
 
 describe('decodeGatewayOperation', () => {
 	it('should decode supported resource operations', () => {
-		const result = decodeGatewayOperation('profile', 'getProfilePosts');
+		const result = decodeGatewayOperation('post', 'likePost');
 
 		assert.equal(Either.isRight(result), true);
 		assert.deepEqual(result.right, {
-			_tag: 'Profile',
-			operation: 'getProfilePosts',
+			_tag: 'Post',
+			operation: 'likePost',
 		});
 	});
 

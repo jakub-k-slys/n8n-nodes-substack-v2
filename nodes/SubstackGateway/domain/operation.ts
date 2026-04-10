@@ -60,6 +60,16 @@ export const gatewayResourceCatalog = [
 				value: 'getNote',
 				action: 'Get a note',
 			},
+			{
+				name: 'Like',
+				value: 'likeNote',
+				action: 'Like a note',
+			},
+			{
+				name: 'Unlike',
+				value: 'unlikeNote',
+				action: 'Unlike a note',
+			},
 		] as const satisfies ReadonlyArray<GatewayOperationOption<string>>,
 	},
 	{
@@ -109,6 +119,16 @@ export const gatewayResourceCatalog = [
 				name: 'Get Comments',
 				value: 'getPostComments',
 				action: 'Get comments for a post',
+			},
+			{
+				name: 'Like',
+				value: 'likePost',
+				action: 'Like a post',
+			},
+			{
+				name: 'Unlike',
+				value: 'unlikePost',
+				action: 'Unlike a post',
 			},
 		] as const satisfies ReadonlyArray<GatewayOperationOption<string>>,
 	},
