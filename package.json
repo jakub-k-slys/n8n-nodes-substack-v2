@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-substack-new",
-	"version": "1.2.2",
+	"version": "1.3.0",
 	"description": "n8n community node for the Substack Gateway API",
 	"license": "MIT",
 	"homepage": "",
