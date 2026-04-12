@@ -1,5 +1,5 @@
 import { Either, Effect, Schema } from 'effect';
-import type { IAllExecuteFunctions } from 'n8n-workflow';
+import { NodeOperationError, type IAllExecuteFunctions, type INode } from 'n8n-workflow';
 
 import {
 	executeAuthenticatedGatewayRequest,
@@ -26,4 +26,21 @@ export const fetchGatewayCapabilities = async (
 	}
 
 	return decoded.right;
+};
+
+export const requireGatewayFeature = async (
+	context: IAllExecuteFunctions,
+	node: INode,
+	gatewayUrl: string,
+	requiredFeature: string,
+	displayName: string,
+): Promise<void> => {
+	const capabilities = await fetchGatewayCapabilities(context, gatewayUrl);
+
+	if (!capabilities.features.includes(requiredFeature)) {
+		throw new NodeOperationError(
+			node,
+			`This Substack Gateway does not support "${displayName}". Required feature: ${requiredFeature}. Current tier: ${capabilities.tier}.`,
+		);
+	}
 };

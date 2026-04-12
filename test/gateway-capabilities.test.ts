@@ -10,6 +10,8 @@ import {
 	getStaticDiscoveryOperations,
 	getStaticDiscoveryResources,
 } from '../nodes/SubstackGateway/domain/operation.ts';
+import { GatewayCapabilitiesSchema } from '../nodes/SubstackGateway/schema/index.ts';
+import { Schema } from 'effect';
 
 describe('gateway capabilities metadata', () => {
 	it('should not require a feature for OSS-supported operations', () => {
@@ -74,5 +76,16 @@ describe('gateway capabilities metadata', () => {
 			getStaticDiscoveryOperations('note').map((operation) => operation.value),
 			['createNote', 'deleteNote', 'getNote'],
 		);
+	});
+
+	it('should decode capability responses that include trigger feed features', async () => {
+		const decoded = await Schema.decodeUnknownPromise(GatewayCapabilitiesSchema)({
+			application: 'substack-gateway',
+			tier: 'pro',
+			version: '0.6.0',
+			features: ['api:me:following:feed', 'api:profiles:feed'],
+		});
+
+		assert.deepEqual(decoded.features, ['api:me:following:feed', 'api:profiles:feed']);
 	});
 });
