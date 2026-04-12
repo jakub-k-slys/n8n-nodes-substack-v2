@@ -1,6 +1,6 @@
 import type { INodeProperties } from 'n8n-workflow';
 
-import { gatewayResourceCatalog } from '../domain/operation';
+import { getStaticDiscoveryResources } from '../domain/operation';
 
 export const resourceProperty: INodeProperties = {
 	displayName: 'Resource Name or ID',
@@ -13,7 +13,7 @@ export const resourceProperty: INodeProperties = {
 	typeOptions: {
 		loadOptionsMethod: 'getGatewayResources',
 	},
-	options: gatewayResourceCatalog.map((resource) => ({
+	options: getStaticDiscoveryResources().map((resource) => ({
 		name: resource.name,
 		value: resource.resource,
 	})),

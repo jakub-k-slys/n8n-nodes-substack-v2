@@ -308,3 +308,13 @@ export const getAvailableResources = (features?: ReadonlyArray<string>) =>
 	gatewayResourceCatalog.filter(
 		(resource) => getAvailableOperations(resource.resource, features).length > 0,
 	);
+
+export const getStaticDiscoveryOperations = (resource: GatewayResource) =>
+	gatewayResourceCatalogByResource[resource].operations.filter(
+		(operation) => operation.requiredFeature === undefined,
+	);
+
+export const getStaticDiscoveryResources = () =>
+	gatewayResourceCatalog.filter(
+		(resource) => getStaticDiscoveryOperations(resource.resource).length > 0,
+	);

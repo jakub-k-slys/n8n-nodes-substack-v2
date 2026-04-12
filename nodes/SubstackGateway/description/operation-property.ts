@@ -3,6 +3,7 @@ import type { INodeProperties } from 'n8n-workflow';
 import {
 	gatewayResourceCatalogByResource,
 	getOperationDescription,
+	getStaticDiscoveryOperations,
 	type GatewayResource,
 } from '../domain/operation';
 
@@ -10,6 +11,11 @@ export const createOperationProperty = <Resource extends GatewayResource>(
 	resource: Resource,
 ): INodeProperties => {
 	const definition = gatewayResourceCatalogByResource[resource];
+	const staticOperations = getStaticDiscoveryOperations(resource);
+	const fallbackOperations =
+		staticOperations.length > 0
+			? staticOperations
+			: definition.operations.filter((operation) => operation.value === definition.defaultOperation);
 
 	// eslint-disable-next-line n8n-nodes-base/node-param-default-missing
 	return {
@@ -29,7 +35,7 @@ export const createOperationProperty = <Resource extends GatewayResource>(
 			loadOptionsMethod: 'getGatewayOperations',
 			loadOptionsDependsOn: ['resource'],
 		},
-		options: definition.operations.map((operation) => ({
+		options: fallbackOperations.map((operation) => ({
 			name: operation.name,
 			value: operation.value,
 			action: operation.action,

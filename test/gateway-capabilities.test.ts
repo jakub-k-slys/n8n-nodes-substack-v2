@@ -7,6 +7,8 @@ import {
 	buildGatewayOperation,
 	getOperationDescription,
 	getRequiredFeatureForOperation,
+	getStaticDiscoveryOperations,
+	getStaticDiscoveryResources,
 } from '../nodes/SubstackGateway/domain/operation.ts';
 
 describe('gateway capabilities metadata', () => {
@@ -57,6 +59,20 @@ describe('gateway capabilities metadata', () => {
 				(operation) => operation.value,
 			),
 			['getPost', 'getPostComments'],
+		);
+	});
+
+	it('should keep only OSS-safe resources in static discovery metadata', () => {
+		assert.deepEqual(
+			getStaticDiscoveryResources().map((resource) => resource.resource),
+			['note', 'ownPublication', 'post', 'profile'],
+		);
+	});
+
+	it('should keep only OSS-safe operations in static discovery metadata', () => {
+		assert.deepEqual(
+			getStaticDiscoveryOperations('note').map((operation) => operation.value),
+			['createNote', 'deleteNote', 'getNote'],
 		);
 	});
 });
