@@ -1,6 +1,7 @@
 import type { INodeProperties } from 'n8n-workflow';
 
 import {
+	getOperationDescription,
 	gatewayResourceCatalogByResource,
 	type GatewayResource,
 } from '../domain/operation';
@@ -26,7 +27,9 @@ export const createOperationProperty = <Resource extends GatewayResource>(
 			name: operation.name,
 			value: operation.value,
 			action: operation.action,
-			...('description' in operation ? { description: operation.description } : {}),
+			...(getOperationDescription(resource, operation.value) === undefined
+				? {}
+				: { description: getOperationDescription(resource, operation.value) }),
 		})),
 	};
 };

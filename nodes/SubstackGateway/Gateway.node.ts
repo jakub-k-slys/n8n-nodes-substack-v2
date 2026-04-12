@@ -10,13 +10,19 @@ import { NodeApiError, NodeConnectionTypes, NodeOperationError } from 'n8n-workf
 import { toGatewayApiBaseUrl } from '../shared/gateway-transport';
 import { substackGatewayProperties } from './description';
 import {
+	getOperationDisplayName,
+	getRequiredFeatureForOperation,
+} from './domain/operation';
+import {
 	isUnsupportedOperationError,
 	toGatewayApiCause,
 	toGatewayErrorMessage,
 } from './domain/error';
 import { GatewayUrlSchema } from './schema';
 import { decodeInput } from './runtime/decode/shared';
+import { decodeGatewayOperation } from './runtime/decode-operation';
 import { runGatewayOperation } from './runtime/execute';
+import { fetchGatewayCapabilities } from './runtime/live/gateway-capabilities';
 
 export class Gateway implements INodeType {
 	description: INodeTypeDescription = {
@@ -55,9 +61,36 @@ export class Gateway implements INodeType {
 		}
 
 		const gatewayUrl = decodedGatewayUrl.right;
+		let capabilitiesPromise:
+			| Promise<Awaited<ReturnType<typeof fetchGatewayCapabilities>>>
+			| undefined;
 
 		for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
 			try {
+				const decodedOperation = decodeGatewayOperation(
+					String(this.getNodeParameter('resource', itemIndex)),
+					String(this.getNodeParameter('operation', itemIndex)),
+				);
+
+				if (Either.isLeft(decodedOperation)) {
+					throw decodedOperation.left;
+				}
+
+				const requiredFeature = getRequiredFeatureForOperation(decodedOperation.right);
+
+				if (requiredFeature !== undefined) {
+					capabilitiesPromise ??= fetchGatewayCapabilities(this, gatewayUrl);
+					const capabilities = await capabilitiesPromise;
+
+					if (!capabilities.features.includes(requiredFeature)) {
+						throw new NodeOperationError(
+							this.getNode(),
+							`This Substack Gateway does not support "${getOperationDisplayName(decodedOperation.right)}". Required feature: ${requiredFeature}. Current tier: ${capabilities.tier}.`,
+							{ itemIndex },
+						);
+					}
+				}
+
 				returnData.push(...(await runGatewayOperation(this, itemIndex, gatewayUrl)));
 			} catch (error) {
 				if (this.continueOnFail()) {

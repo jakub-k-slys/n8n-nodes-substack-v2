@@ -1,4 +1,7 @@
 const API_VERSION_PATH = '/api/v1';
 
+export const toGatewayRootUrl = (gatewayUrl: string): string =>
+	gatewayUrl.replace(/\/+$/, '').replace(/\/api\/v1$/i, '');
+
 export const toGatewayApiBaseUrl = (gatewayUrl: string): string =>
-	`${gatewayUrl.replace(/\/+$/, '').replace(/\/api\/v1$/i, '')}${API_VERSION_PATH}`;
+	`${toGatewayRootUrl(gatewayUrl)}${API_VERSION_PATH}`;
