@@ -12,7 +12,11 @@ import {
 	defaultMonthDays,
 	defaultWeekdays,
 	evaluateRandomizerSchedules,
+	makeRandomizerClock,
+	makeRandomizerEntropy,
 	previewRandomizerSchedules,
+	RandomizerClock,
+	RandomizerEntropy,
 	readRandomizerState,
 	sanitizeMonthDays,
 	sanitizeWeekdays,
@@ -253,29 +257,27 @@ export class Randomizer implements INodeType {
 					json: occurrence,
 				})),
 			]);
-		};
-		const evaluateAndEmit = () => {
-			void Effect.runPromise(
-				Effect.flatMap(
-					readRandomizerState(pollState.randomizer),
-					(currentState) =>
-						Effect.tap(
-							evaluateRandomizerSchedules(
-								new Date(),
-								schedules,
-								currentState,
+			};
+			const evaluateAndEmit = () => {
+				const now = new Date();
+				void Effect.runPromise(
+					provideSchedulerServices(
+						Effect.flatMap(readRandomizerState(pollState.randomizer), (currentState) =>
+							Effect.tap(
+								evaluateRandomizerSchedules(schedules, currentState),
+								(evaluation) =>
+									Effect.sync(() => {
+										pollState.randomizer = evaluation.state as unknown as JsonObject;
+										emitOccurrences(evaluation.emitted);
+									}),
 							),
-							(evaluation) =>
-								Effect.sync(() => {
-									pollState.randomizer = evaluation.state as unknown as JsonObject;
-									emitOccurrences(evaluation.emitted);
-								}),
 						),
-				),
-			).catch((error: RandomizerError) => {
-				this.emitError(new NodeOperationError(this.getNode(), error.message));
-			});
-		};
+						now,
+					),
+				).catch((error: RandomizerError) => {
+					this.emitError(new NodeOperationError(this.getNode(), error.message));
+				});
+			};
 
 		if (this.getMode() !== 'manual') {
 			this.helpers.registerCron({ expression: MINUTE_CRON_EXPRESSION }, evaluateAndEmit);
@@ -284,32 +286,56 @@ export class Randomizer implements INodeType {
 		}
 
 		const manualTriggerFunction = async () => {
+			const previewGeneratedAt = new Date();
 			const nextPreviewOccurrence = await runRandomizerEffect(
 				this,
-				Effect.map(previewRandomizerSchedules(new Date(), schedules), (occurrences) =>
-					occurrences.reduce<typeof occurrences[number] | undefined>(
-						(currentEarliest, occurrence) => {
-							if (
-								currentEarliest === undefined ||
-								occurrence.plannedAt.localeCompare(currentEarliest.plannedAt) < 0
-							) {
-								return occurrence;
-							}
+				provideSchedulerServices(
+					Effect.map(previewRandomizerSchedules(schedules), (occurrences) =>
+						occurrences.reduce<typeof occurrences[number] | undefined>(
+							(currentEarliest, occurrence) => {
+								if (
+									currentEarliest === undefined ||
+									occurrence.plannedAt.localeCompare(currentEarliest.plannedAt) < 0
+								) {
+									return occurrence;
+								}
 
-							return currentEarliest;
-						},
-						undefined,
+								return currentEarliest;
+							},
+							undefined,
+						),
 					),
+					previewGeneratedAt,
 				),
+			);
+			const previewOccurrences = await runRandomizerEffect(
+				this,
+				provideSchedulerServices(previewRandomizerSchedules(schedules), previewGeneratedAt),
 			);
 
 			if (nextPreviewOccurrence !== undefined) {
+				const scheduleOccurrences = previewOccurrences.filter(
+					(occurrence) =>
+						occurrence.scheduleKey === nextPreviewOccurrence.scheduleKey &&
+						occurrence.windowDate === nextPreviewOccurrence.windowDate,
+				);
 				this.emit([
 					[
 						{
 							json: {
 								...nextPreviewOccurrence,
 								preview: true,
+								previewType: 'next_planned_occurrence',
+								previewGeneratedAt: previewGeneratedAt.toISOString(),
+								previewScheduleCount: schedules.length,
+								previewOccurrencesInWindow: scheduleOccurrences.length,
+								previewRemainingOccurrencesInWindow: Math.max(
+									nextPreviewOccurrence.occurrencesInWindow -
+										nextPreviewOccurrence.occurrenceIndex,
+									0,
+								),
+								previewNote:
+									'Manual execution previews the next planned random occurrence only',
 							},
 						},
 					],
@@ -332,9 +358,8 @@ const getSchedules = (
 		}
 
 		return Effect.forEach(schedules, (schedule, index) =>
-			Effect.flatMap(
-				sanitizeMonthDays(String(schedule.parameters?.monthDays ?? '')),
-				(monthDays) =>
+			Effect.flatMap(sanitizeMonthDays(String(schedule.parameters?.monthDays ?? '')), (monthDays) =>
+				Effect.flatMap(sanitizeWeekdays(schedule.parameters?.weekdays), (weekdays) =>
 					validateSchedule({
 						key: `schedule-${index}`,
 						name: String(schedule.name ?? '').trim(),
@@ -342,10 +367,11 @@ const getSchedules = (
 						windowStart: toUtcTimeString(schedule.windowStartHour, schedule.windowStartMinute),
 						windowEnd: toUtcTimeString(schedule.windowEndHour, schedule.windowEndMinute),
 						occurrences: Number(schedule.parameters?.occurrences ?? 3),
-						weekdays: sanitizeWeekdays(schedule.parameters?.weekdays),
+						weekdays,
 						monthDays,
 						minimumSpacingMinutes: Number(schedule.parameters?.minimumSpacingMinutes ?? 0),
 					}),
+				),
 			),
 		);
 	});
@@ -354,13 +380,25 @@ const getSchedules = (
 const toUtcTimeString = (hour: string | undefined, minute: string | undefined): string =>
 	`${String(hour ?? '').padStart(2, '0')}:${String(minute ?? '').padStart(2, '0')}`;
 
-const runRandomizerEffect = <A>(
+const runRandomizerEffect = <A, R>(
 	context: ITriggerFunctions,
-	effect: Effect.Effect<A, RandomizerError>,
+	effect: Effect.Effect<A, RandomizerError, R>,
 ): Promise<A> =>
-	Effect.runPromise(effect).catch((error: RandomizerError) => {
+	Effect.runPromise(effect as Effect.Effect<A, RandomizerError>).catch(
+		(error: RandomizerError) => {
 		throw new NodeOperationError(context.getNode(), error.message);
-	});
+		},
+	);
+
+const provideSchedulerServices = <A, R>(
+	effect: Effect.Effect<A, RandomizerError, R>,
+	now: Date,
+): Effect.Effect<A, RandomizerError> =>
+	Effect.provideService(
+		Effect.provideService(effect, RandomizerClock, makeRandomizerClock(now)),
+		RandomizerEntropy,
+		makeRandomizerEntropy(Math.random),
+	) as Effect.Effect<A, RandomizerError>;
 
 const readRandomizerInput = (
 	context: ITriggerFunctions,
