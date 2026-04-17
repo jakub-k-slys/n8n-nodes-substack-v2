@@ -6,6 +6,7 @@ import type {
 	JsonObject,
 } from 'n8n-workflow';
 import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
+import { Effect } from 'effect';
 
 import {
 	defaultMonthDays,
@@ -15,6 +16,7 @@ import {
 	readRandomizerState,
 	sanitizeMonthDays,
 	sanitizeWeekdays,
+	type RandomizerError,
 	type RandomizerPeriodicity,
 	type RandomizerSchedule,
 	type EmittedOccurrence,
@@ -254,7 +256,7 @@ export class Randomizer implements INodeType {
 	};
 
 	async trigger(this: ITriggerFunctions): Promise<ITriggerResponse> {
-		const schedules = getSchedules(this);
+		const schedules = await runRandomizerEffect(this, getSchedules(this));
 		const pollState = this.getWorkflowStaticData('node') as JsonObject;
 		const emitOccurrences = (occurrences: readonly EmittedOccurrence[]) => {
 			if (occurrences.length === 0) {
@@ -268,14 +270,22 @@ export class Randomizer implements INodeType {
 			]);
 		};
 		const evaluateAndEmit = () => {
-			const evaluation = evaluateRandomizerSchedules(
-				new Date(),
-				schedules,
-				readRandomizerState(pollState.randomizer),
-			);
-
-			pollState.randomizer = evaluation.state as unknown as JsonObject;
-			emitOccurrences(evaluation.emitted);
+			void Effect.runPromise(
+				Effect.tap(
+					evaluateRandomizerSchedules(
+						new Date(),
+						schedules,
+						readRandomizerState(pollState.randomizer),
+					),
+					(evaluation) =>
+						Effect.sync(() => {
+							pollState.randomizer = evaluation.state as unknown as JsonObject;
+							emitOccurrences(evaluation.emitted);
+						}),
+				),
+			).catch((error: RandomizerError) => {
+				this.emitError(new NodeOperationError(this.getNode(), error.message));
+			});
 		};
 
 		if (this.getMode() !== 'manual') {
@@ -285,18 +295,24 @@ export class Randomizer implements INodeType {
 		}
 
 		const manualTriggerFunction = async () => {
-			const nextPreviewOccurrence = previewRandomizerSchedules(new Date(), schedules).reduce<
-				ReturnType<typeof previewRandomizerSchedules>[number] | undefined
-			>((currentEarliest, occurrence) => {
-				if (
-					currentEarliest === undefined ||
-					occurrence.plannedAt.localeCompare(currentEarliest.plannedAt) < 0
-				) {
-					return occurrence;
-				}
+			const nextPreviewOccurrence = await runRandomizerEffect(
+				this,
+				Effect.map(previewRandomizerSchedules(new Date(), schedules), (occurrences) =>
+					occurrences.reduce<typeof occurrences[number] | undefined>(
+						(currentEarliest, occurrence) => {
+							if (
+								currentEarliest === undefined ||
+								occurrence.plannedAt.localeCompare(currentEarliest.plannedAt) < 0
+							) {
+								return occurrence;
+							}
 
-				return currentEarliest;
-			}, undefined);
+							return currentEarliest;
+						},
+						undefined,
+					),
+				),
+			);
 
 			if (nextPreviewOccurrence !== undefined) {
 				this.emit([
@@ -316,32 +332,45 @@ export class Randomizer implements INodeType {
 	}
 }
 
-const getSchedules = (context: ITriggerFunctions): readonly RandomizerSchedule[] => {
+const getSchedules = (
+	context: ITriggerFunctions,
+): Effect.Effect<readonly RandomizerSchedule[], RandomizerError> => {
 	const input = context.getNodeParameter('schedules') as RandomizerScheduleCollection;
 	const schedules = input.schedule ?? [];
 
 	if (schedules.length === 0) {
-		throw new NodeOperationError(context.getNode(), 'At least one schedule is required');
+		return Effect.fail({
+			_tag: 'RandomizerError',
+			message: 'At least one schedule is required',
+		});
 	}
 
-	try {
-		return schedules.map((schedule, index) =>
-			validateSchedule({
-				key: `schedule-${index}`,
-				name: String(schedule.name ?? '').trim(),
-				periodicity: schedule.parameters?.periodicity ?? 'daily',
-				windowStart: toUtcTimeString(schedule.windowStartHour, schedule.windowStartMinute),
-				windowEnd: toUtcTimeString(schedule.windowEndHour, schedule.windowEndMinute),
-				occurrences: Number(schedule.parameters?.occurrences ?? 3),
-				weekdays: sanitizeWeekdays(schedule.parameters?.weekdays),
-				monthDays: sanitizeMonthDays(String(schedule.parameters?.monthDays ?? '')),
-				minimumSpacingMinutes: Number(schedule.parameters?.minimumSpacingMinutes ?? 0),
-			}),
-		);
-	} catch (error) {
-		throw new NodeOperationError(context.getNode(), error as Error);
-	}
+	return Effect.forEach(schedules, (schedule, index) =>
+		Effect.flatMap(
+			sanitizeMonthDays(String(schedule.parameters?.monthDays ?? '')),
+			(monthDays) =>
+				validateSchedule({
+					key: `schedule-${index}`,
+					name: String(schedule.name ?? '').trim(),
+					periodicity: schedule.parameters?.periodicity ?? 'daily',
+					windowStart: toUtcTimeString(schedule.windowStartHour, schedule.windowStartMinute),
+					windowEnd: toUtcTimeString(schedule.windowEndHour, schedule.windowEndMinute),
+					occurrences: Number(schedule.parameters?.occurrences ?? 3),
+					weekdays: sanitizeWeekdays(schedule.parameters?.weekdays),
+					monthDays,
+					minimumSpacingMinutes: Number(schedule.parameters?.minimumSpacingMinutes ?? 0),
+				}),
+		),
+	);
 };
 
 const toUtcTimeString = (hour: string | undefined, minute: string | undefined): string =>
 	`${String(hour ?? '').padStart(2, '0')}:${String(minute ?? '').padStart(2, '0')}`;
+
+const runRandomizerEffect = <A>(
+	context: ITriggerFunctions,
+	effect: Effect.Effect<A, RandomizerError>,
+): Promise<A> =>
+	Effect.runPromise(effect).catch((error: RandomizerError) => {
+		throw new NodeOperationError(context.getNode(), error.message);
+	});

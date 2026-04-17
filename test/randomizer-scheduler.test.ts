@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
+import { Effect } from 'effect';
 
 import {
 	createEmptyRandomizerState,
@@ -12,7 +13,8 @@ const fixedRandom = (value: number) => () => value;
 
 describe('randomizer scheduler', () => {
 	it('should emit three daily occurrences inside the configured UTC window', () => {
-		const schedule = validateSchedule({
+		const schedule = Effect.runSync(
+			validateSchedule({
 			key: 'schedule-0',
 			name: 'Daily Window',
 			periodicity: 'daily',
@@ -22,24 +24,25 @@ describe('randomizer scheduler', () => {
 			weekdays: [],
 			monthDays: [],
 			minimumSpacingMinutes: 0,
-		});
+			}),
+		);
 
-		const firstPoll = evaluateRandomizerSchedules(
+		const firstPoll = Effect.runSync(evaluateRandomizerSchedules(
 			new Date('2026-04-17T09:00:00.000Z'),
 			[schedule],
 			createEmptyRandomizerState(),
 			fixedRandom(0),
-		);
+		));
 
 		assert.equal(firstPoll.emitted.length, 0);
 		assert.equal(firstPoll.state.schedules['schedule-0']?.pending.length, 3);
 
-		const secondPoll = evaluateRandomizerSchedules(
+		const secondPoll = Effect.runSync(evaluateRandomizerSchedules(
 			new Date('2026-04-17T10:02:00.000Z'),
 			[schedule],
 			firstPoll.state,
 			fixedRandom(0),
-		);
+		));
 
 		assert.equal(secondPoll.emitted.length, 3);
 		assert.deepEqual(
@@ -54,7 +57,8 @@ describe('randomizer scheduler', () => {
 	});
 
 	it('should generate weekly windows only on configured weekdays', () => {
-		const schedule = validateSchedule({
+		const schedule = Effect.runSync(
+			validateSchedule({
 			key: 'schedule-0',
 			name: 'Weekly Window',
 			periodicity: 'weekly',
@@ -64,30 +68,32 @@ describe('randomizer scheduler', () => {
 			weekdays: ['monday'],
 			monthDays: [],
 			minimumSpacingMinutes: 0,
-		});
+			}),
+		);
 
-		const fridayPoll = evaluateRandomizerSchedules(
+		const fridayPoll = Effect.runSync(evaluateRandomizerSchedules(
 			new Date('2026-04-17T12:30:00.000Z'),
 			[schedule],
 			createEmptyRandomizerState(),
 			fixedRandom(0),
-		);
+		));
 
 		assert.equal(fridayPoll.emitted.length, 0);
 
-		const mondayPoll = evaluateRandomizerSchedules(
+		const mondayPoll = Effect.runSync(evaluateRandomizerSchedules(
 			new Date('2026-04-20T12:00:00.000Z'),
 			[schedule],
 			fridayPoll.state,
 			fixedRandom(0),
-		);
+		));
 
 		assert.equal(mondayPoll.emitted.length, 1);
 		assert.equal(mondayPoll.emitted[0]?.plannedAt, '2026-04-20T12:00:00.000Z');
 	});
 
 	it('should generate monthly windows only on configured month days', () => {
-		const schedule = validateSchedule({
+		const schedule = Effect.runSync(
+			validateSchedule({
 			key: 'schedule-0',
 			name: 'Monthly Window',
 			periodicity: 'monthly',
@@ -97,30 +103,32 @@ describe('randomizer scheduler', () => {
 			weekdays: [],
 			monthDays: [15],
 			minimumSpacingMinutes: 0,
-		});
+			}),
+		);
 
-		const firstPoll = evaluateRandomizerSchedules(
+		const firstPoll = Effect.runSync(evaluateRandomizerSchedules(
 			new Date('2026-04-14T09:00:00.000Z'),
 			[schedule],
 			createEmptyRandomizerState(),
 			fixedRandom(0),
-		);
+		));
 
 		assert.equal(firstPoll.emitted.length, 0);
 
-		const secondPoll = evaluateRandomizerSchedules(
+		const secondPoll = Effect.runSync(evaluateRandomizerSchedules(
 			new Date('2026-04-15T08:00:00.000Z'),
 			[schedule],
 			firstPoll.state,
 			fixedRandom(0),
-		);
+		));
 
 		assert.equal(secondPoll.emitted.length, 1);
 		assert.equal(secondPoll.emitted[0]?.plannedAt, '2026-04-15T08:00:00.000Z');
 	});
 
 	it('should preview the next applicable window in manual mode', () => {
-		const schedule = validateSchedule({
+		const schedule = Effect.runSync(
+			validateSchedule({
 			key: 'schedule-0',
 			name: 'Preview Window',
 			periodicity: 'daily',
@@ -130,13 +138,14 @@ describe('randomizer scheduler', () => {
 			weekdays: [],
 			monthDays: [],
 			minimumSpacingMinutes: 0,
-		});
+			}),
+		);
 
-		const preview = previewRandomizerSchedules(
+		const preview = Effect.runSync(previewRandomizerSchedules(
 			new Date('2026-04-17T11:00:00.000Z'),
 			[schedule],
 			fixedRandom(0),
-		);
+		));
 
 		assert.equal(preview.length, 2);
 		assert.deepEqual(

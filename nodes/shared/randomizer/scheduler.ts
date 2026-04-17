@@ -1,3 +1,5 @@
+import { Effect } from 'effect';
+
 const MINUTES_PER_DAY = 24 * 60;
 const MILLISECONDS_PER_MINUTE = 60 * 1000;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -55,6 +57,12 @@ export type EmittedOccurrence = PendingOccurrence & {
 	readonly firedAt: string;
 };
 
+export type RandomizerError = {
+	readonly _tag: 'RandomizerError';
+	readonly message: string;
+	readonly cause?: unknown;
+};
+
 type PlannedWindow = {
 	readonly windowDate: string;
 	readonly windowStart: Date;
@@ -89,7 +97,11 @@ export const evaluateRandomizerSchedules = (
 	schedules: readonly RandomizerSchedule[],
 	currentState: RandomizerState,
 	random: () => number = Math.random,
-): { readonly state: RandomizerState; readonly emitted: readonly EmittedOccurrence[] } => {
+): Effect.Effect<
+	{ readonly state: RandomizerState; readonly emitted: readonly EmittedOccurrence[] },
+	RandomizerError
+> =>
+	tryRandomizerEffect(() => {
 	const nextSchedulesState: Record<string, PersistedScheduleState> = {};
 	const emitted: EmittedOccurrence[] = [];
 
@@ -114,14 +126,16 @@ export const evaluateRandomizerSchedules = (
 		},
 		emitted,
 	};
-};
+	});
 
 export const previewRandomizerSchedules = (
 	now: Date,
 	schedules: readonly RandomizerSchedule[],
 	random: () => number = Math.random,
-): readonly PendingOccurrence[] =>
-	schedules.flatMap((schedule) => previewSchedule(now, schedule, random));
+): Effect.Effect<readonly PendingOccurrence[], RandomizerError> =>
+	tryRandomizerEffect(() =>
+		schedules.flatMap((schedule) => previewSchedule(now, schedule, random)),
+	);
 
 const evaluateSchedule = (
 	now: Date,
@@ -376,7 +390,10 @@ const isRandomizerState = (value: unknown): value is RandomizerState => {
 	return candidate.version === 1 && typeof candidate.schedules === 'object' && candidate.schedules !== null;
 };
 
-export const sanitizeMonthDays = (value: string): readonly number[] => {
+export const sanitizeMonthDays = (
+	value: string,
+): Effect.Effect<readonly number[], RandomizerError> =>
+	tryRandomizerEffect(() => {
 	const uniqueDays = new Set<number>();
 
 	for (const rawPart of value.split(',')) {
@@ -396,7 +413,7 @@ export const sanitizeMonthDays = (value: string): readonly number[] => {
 	}
 
 	return [...uniqueDays].sort((left, right) => left - right);
-};
+	});
 
 export const sanitizeWeekdays = (value: unknown): readonly RandomizerWeekday[] => {
 	if (!Array.isArray(value)) {
@@ -438,7 +455,8 @@ export const createScheduleFingerprint = (
 
 export const validateSchedule = (
 	schedule: Omit<RandomizerSchedule, 'fingerprint'>,
-): RandomizerSchedule => {
+): Effect.Effect<RandomizerSchedule, RandomizerError> =>
+	tryRandomizerEffect(() => {
 	if (schedule.name.trim().length === 0) {
 		throw new Error('Schedule Name is required');
 	}
@@ -473,8 +491,19 @@ export const validateSchedule = (
 		...schedule,
 		fingerprint: createScheduleFingerprint(schedule),
 	};
-};
+	});
 
 export const defaultWeekdays: readonly RandomizerWeekday[] = ['monday'];
 export const defaultMonthDays: readonly number[] = [1];
 export const maxMinutesPerDay = MINUTES_PER_DAY;
+
+const tryRandomizerEffect = <A>(thunk: () => A): Effect.Effect<A, RandomizerError> =>
+	Effect.try({
+		try: thunk,
+		catch: (cause) => ({
+			_tag: 'RandomizerError',
+			message:
+				cause instanceof Error ? cause.message : 'Randomizer scheduling failed',
+			cause,
+		}),
+	});
