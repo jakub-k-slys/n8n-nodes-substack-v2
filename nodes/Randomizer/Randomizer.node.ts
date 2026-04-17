@@ -1,8 +1,8 @@
 import type {
-	INodeExecutionData,
 	INodeType,
 	INodeTypeDescription,
-	IPollFunctions,
+	ITriggerFunctions,
+	ITriggerResponse,
 	JsonObject,
 } from 'n8n-workflow';
 import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
@@ -17,6 +17,7 @@ import {
 	sanitizeWeekdays,
 	type RandomizerPeriodicity,
 	type RandomizerSchedule,
+	type EmittedOccurrence,
 	validateSchedule,
 } from '../shared/randomizer';
 
@@ -35,6 +36,8 @@ type RandomizerScheduleCollection = {
 	readonly schedule?: RandomizerScheduleInput[];
 };
 
+const MINUTE_CRON_EXPRESSION = '0 * * * * *';
+
 export class Randomizer implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Randomizer',
@@ -45,12 +48,16 @@ export class Randomizer implements INodeType {
 		},
 		group: ['trigger'],
 		version: 1,
+		subtitle:
+			'={{(($parameter["schedules"]?.schedule ?? []).length || 0) + " schedule" + ((($parameter["schedules"]?.schedule ?? []).length || 0) === 1 ? "" : "s")}}',
 		description: 'Fire random UTC trigger events inside configured schedule windows',
 		defaults: {
 			name: 'Randomizer',
 		},
+		eventTriggerDescription: 'Runs when one or more generated UTC random times become due',
+		activationMessage:
+			'Your randomizer trigger will now create random UTC fire times based on the schedules you defined.',
 		usableAsTool: true,
-		polling: true,
 		inputs: [],
 		outputs: [NodeConnectionTypes.Main],
 		properties: [
@@ -58,6 +65,7 @@ export class Randomizer implements INodeType {
 				displayName: 'Schedules',
 				name: 'schedules',
 				type: 'fixedCollection',
+				noDataExpression: true,
 				typeOptions: {
 					multipleValues: true,
 				},
@@ -65,7 +73,7 @@ export class Randomizer implements INodeType {
 				default: {
 					schedule: [
 						{
-							name: 'Daily Window',
+							name: 'Morning Burst',
 							periodicity: 'daily',
 							windowStart: '10:00',
 							windowEnd: '13:17',
@@ -82,17 +90,18 @@ export class Randomizer implements INodeType {
 						displayName: 'Schedule',
 						values: [
 							{
-								displayName: 'Minimum Spacing Minutes',
+								displayName: 'Minimum Spacing (Minutes)',
 								name: 'minimumSpacingMinutes',
 								type: 'number',
 								typeOptions: {
 									minValue: 0,
 								},
 								default: 0,
-								description: 'Minimum number of minutes between random fires inside the same window',
+								description:
+									'Minimum number of minutes between random trigger fires in the same UTC window',
 							},
 							{
-								displayName: 'Month Days',
+								displayName: 'Month Days (UTC)',
 								name: 'monthDays',
 								type: 'string',
 								default: defaultMonthDays.join(','),
@@ -101,26 +110,8 @@ export class Randomizer implements INodeType {
 										periodicity: ['monthly'],
 									},
 								},
-								description: 'Comma-separated UTC month days from 1 to 31',
-							},
-							{
-								displayName: 'Name',
-								name: 'name',
-								type: 'string',
-								required: true,
-								default: '',
-								description: 'Friendly schedule name included in emitted items',
-							},
-							{
-								displayName: 'Occurrences',
-								name: 'occurrences',
-								type: 'number',
-								required: true,
-								typeOptions: {
-									minValue: 1,
-								},
-								default: 3,
-								description: 'How many random fires to create inside each matching window',
+								description:
+									'Comma-separated month days from 1 to 31, for example 1,15,28',
 							},
 							{
 								displayName: 'Periodicity',
@@ -142,10 +133,29 @@ export class Randomizer implements INodeType {
 										value: 'monthly',
 									},
 								],
-								description: 'How often to create a fresh random window in UTC',
+								description: 'How often to create a fresh random UTC schedule window',
 							},
 							{
-								displayName: 'Weekdays',
+								displayName: 'Schedule Name',
+								name: 'name',
+								type: 'string',
+								required: true,
+								default: 'Morning Burst',
+								description: 'Friendly label included in emitted items',
+							},
+							{
+								displayName: 'Times Per Window',
+								name: 'occurrences',
+								type: 'number',
+								required: true,
+								typeOptions: {
+									minValue: 1,
+								},
+								default: 3,
+								description: 'How many random trigger fires to create inside each matching window',
+							},
+							{
+								displayName: 'Weekdays (UTC)',
 								name: 'weekdays',
 								type: 'multiOptions',
 								default: [...defaultWeekdays],
@@ -163,64 +173,82 @@ export class Randomizer implements INodeType {
 									{ name: 'Tuesday', value: 'tuesday' },
 									{ name: 'Wednesday', value: 'wednesday' },
 								],
-								description: 'UTC weekdays to use for weekly schedules',
+								description: 'Weekdays to use when Periodicity is Weekly',
 							},
 							{
-								displayName: 'Window End',
+								displayName: 'Window End (UTC)',
 								name: 'windowEnd',
 								type: 'string',
 								required: true,
 								default: '13:17',
-								description: 'UTC window end in HH:mm format',
+								description: 'End of the UTC time window in HH:mm format, for example 13:17',
 							},
 							{
-								displayName: 'Window Start',
+								displayName: 'Window Start (UTC)',
 								name: 'windowStart',
 								type: 'string',
 								required: true,
 								default: '10:00',
-								description: 'UTC window start in HH:mm format',
+								description: 'Start of the UTC time window in HH:mm format, for example 10:00',
 							},
 						],
 					},
 				],
-				description: 'UTC schedules that generate random fire times inside each configured window',
+				description:
+					'Create one or more UTC schedules. Manual execution previews the next planned random fire times instead of waiting for them.',
 			},
 		],
 	};
 
-	poll = async function (
-		this: IPollFunctions,
-	): Promise<INodeExecutionData[][] | null> {
+	async trigger(this: ITriggerFunctions): Promise<ITriggerResponse> {
 		const schedules = getSchedules(this);
-		const now = new Date();
+		const pollState = this.getWorkflowStaticData('node') as JsonObject;
+		const emitOccurrences = (occurrences: readonly EmittedOccurrence[]) => {
+			if (occurrences.length === 0) {
+				return;
+			}
 
-		if (this.getMode() === 'manual') {
-			const previewItems = previewRandomizerSchedules(now, schedules).map((occurrence) => ({
+			this.emit([
+				occurrences.map((occurrence) => ({
+					json: occurrence,
+				})),
+			]);
+		};
+		const evaluateAndEmit = () => {
+			const evaluation = evaluateRandomizerSchedules(
+				new Date(),
+				schedules,
+				readRandomizerState(pollState.randomizer),
+			);
+
+			pollState.randomizer = evaluation.state as unknown as JsonObject;
+			emitOccurrences(evaluation.emitted);
+		};
+
+		if (this.getMode() !== 'manual') {
+			this.helpers.registerCron({ expression: MINUTE_CRON_EXPRESSION }, evaluateAndEmit);
+
+			return {};
+		}
+
+		const manualTriggerFunction = async () => {
+			const previewItems = previewRandomizerSchedules(new Date(), schedules).map((occurrence) => ({
 				json: {
 					...occurrence,
 					preview: true,
 				},
 			}));
 
-			return previewItems.length === 0 ? null : [previewItems];
-		}
+			if (previewItems.length > 0) {
+				this.emit([previewItems]);
+			}
+		};
 
-		const pollState = this.getWorkflowStaticData('node') as JsonObject;
-		const currentState = readRandomizerState(pollState.randomizer);
-		const evaluation = evaluateRandomizerSchedules(now, schedules, currentState);
-
-		pollState.randomizer = evaluation.state as unknown as JsonObject;
-
-		const items = evaluation.emitted.map((occurrence) => ({
-			json: occurrence,
-		}));
-
-		return items.length === 0 ? null : [items];
-	};
+		return { manualTriggerFunction };
+	}
 }
 
-const getSchedules = (context: IPollFunctions): readonly RandomizerSchedule[] => {
+const getSchedules = (context: ITriggerFunctions): readonly RandomizerSchedule[] => {
 	const input = context.getNodeParameter('schedules') as RandomizerScheduleCollection;
 	const schedules = input.schedule ?? [];
 

@@ -53,7 +53,7 @@ describe('package build smoke', () => {
 
 		assert.equal(node.description.name, 'randomizer');
 		assert.equal(node.description.displayName, 'Randomizer');
-		assert.equal(node.description.polling, true);
+		assert.equal(node.description.polling, undefined);
 		assert.equal(node.description.properties[0]?.name, 'schedules');
 	});
 });
