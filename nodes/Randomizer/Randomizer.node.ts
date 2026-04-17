@@ -6,7 +6,7 @@ import type {
 	JsonObject,
 } from 'n8n-workflow';
 import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
-import { Effect } from 'effect';
+import { Effect, Either } from 'effect';
 
 import {
 	defaultMonthDays,
@@ -17,30 +17,15 @@ import {
 	sanitizeMonthDays,
 	sanitizeWeekdays,
 	type RandomizerError,
-	type RandomizerPeriodicity,
 	type RandomizerSchedule,
 	type EmittedOccurrence,
 	validateSchedule,
 } from '../shared/randomizer';
-
-type RandomizerScheduleInput = {
-	readonly name?: string;
-	readonly windowStartHour?: string;
-	readonly windowStartMinute?: string;
-	readonly windowEndHour?: string;
-	readonly windowEndMinute?: string;
-	readonly parameters?: {
-		readonly periodicity?: RandomizerPeriodicity;
-		readonly occurrences?: number;
-		readonly weekdays?: unknown;
-		readonly monthDays?: string;
-		readonly minimumSpacingMinutes?: number;
-	};
-};
-
-type RandomizerScheduleCollection = {
-	readonly schedule?: RandomizerScheduleInput[];
-};
+import {
+	RandomizerScheduleCollectionSchema,
+	type RandomizerScheduleCollection,
+} from './schema';
+import * as Schema from 'effect/Schema';
 
 const MINUTE_CRON_EXPRESSION = '0 * * * * *';
 const HOUR_OPTIONS = Array.from({ length: 24 }, (_, hour) => {
@@ -335,33 +320,31 @@ export class Randomizer implements INodeType {
 const getSchedules = (
 	context: ITriggerFunctions,
 ): Effect.Effect<readonly RandomizerSchedule[], RandomizerError> => {
-	const input = context.getNodeParameter('schedules') as RandomizerScheduleCollection;
-	const schedules = input.schedule ?? [];
+	return Effect.flatMap(readRandomizerInput(context), (input) => {
+		const schedules = input.schedule ?? [];
 
-	if (schedules.length === 0) {
-		return Effect.fail({
-			_tag: 'RandomizerError',
-			message: 'At least one schedule is required',
-		});
-	}
+		if (schedules.length === 0) {
+			return Effect.fail(toRandomizerError('At least one schedule is required'));
+		}
 
-	return Effect.forEach(schedules, (schedule, index) =>
-		Effect.flatMap(
-			sanitizeMonthDays(String(schedule.parameters?.monthDays ?? '')),
-			(monthDays) =>
-				validateSchedule({
-					key: `schedule-${index}`,
-					name: String(schedule.name ?? '').trim(),
-					periodicity: schedule.parameters?.periodicity ?? 'daily',
-					windowStart: toUtcTimeString(schedule.windowStartHour, schedule.windowStartMinute),
-					windowEnd: toUtcTimeString(schedule.windowEndHour, schedule.windowEndMinute),
-					occurrences: Number(schedule.parameters?.occurrences ?? 3),
-					weekdays: sanitizeWeekdays(schedule.parameters?.weekdays),
-					monthDays,
-					minimumSpacingMinutes: Number(schedule.parameters?.minimumSpacingMinutes ?? 0),
-				}),
-		),
-	);
+		return Effect.forEach(schedules, (schedule, index) =>
+			Effect.flatMap(
+				sanitizeMonthDays(String(schedule.parameters?.monthDays ?? '')),
+				(monthDays) =>
+					validateSchedule({
+						key: `schedule-${index}`,
+						name: String(schedule.name ?? '').trim(),
+						periodicity: schedule.parameters?.periodicity ?? 'daily',
+						windowStart: toUtcTimeString(schedule.windowStartHour, schedule.windowStartMinute),
+						windowEnd: toUtcTimeString(schedule.windowEndHour, schedule.windowEndMinute),
+						occurrences: Number(schedule.parameters?.occurrences ?? 3),
+						weekdays: sanitizeWeekdays(schedule.parameters?.weekdays),
+						monthDays,
+						minimumSpacingMinutes: Number(schedule.parameters?.minimumSpacingMinutes ?? 0),
+					}),
+			),
+		);
+	});
 };
 
 const toUtcTimeString = (hour: string | undefined, minute: string | undefined): string =>
@@ -374,3 +357,29 @@ const runRandomizerEffect = <A>(
 	Effect.runPromise(effect).catch((error: RandomizerError) => {
 		throw new NodeOperationError(context.getNode(), error.message);
 	});
+
+const readRandomizerInput = (
+	context: ITriggerFunctions,
+): Effect.Effect<RandomizerScheduleCollection, RandomizerError> =>
+	Effect.try({
+		try: () => context.getNodeParameter('schedules'),
+		catch: (cause) =>
+			toRandomizerError(
+				cause instanceof Error ? cause.message : 'Unable to read Randomizer parameters',
+				cause,
+			),
+	}).pipe(
+		Effect.flatMap((input) => {
+			const decoded = Schema.decodeUnknownEither(RandomizerScheduleCollectionSchema)(input);
+
+			return Either.isRight(decoded)
+				? Effect.succeed(decoded.right)
+				: Effect.fail(toRandomizerError('Invalid Randomizer parameters', decoded.left));
+		}),
+	);
+
+const toRandomizerError = (message: string, cause?: unknown): RandomizerError => ({
+	_tag: 'RandomizerError',
+	message,
+	cause,
+});
