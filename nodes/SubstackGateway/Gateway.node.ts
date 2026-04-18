@@ -73,7 +73,7 @@ export class Gateway implements INodeType {
 		icon: { light: 'file:substackGateway.svg', dark: 'file:substackGateway.dark.svg' },
 		group: ['input'],
 		version: [1],
-		description: 'Interact with the Substack Gateway API',
+		description: 'Read and manage Substack profiles, posts, notes, and drafts through Substack Gateway',
 		defaults: {
 			name: 'Substack Gateway',
 		},
