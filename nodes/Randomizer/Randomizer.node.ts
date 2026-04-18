@@ -119,7 +119,7 @@ export class Randomizer implements INodeType {
 								required: true,
 								default: '10',
 								options: HOUR_OPTIONS,
-								description: 'Hour when the random window starts in the selected timezone.',
+								description: 'Hour when the random window starts in the selected timezone',
 							},
 							{
 								displayName: '1. Window Start Minute',
@@ -128,7 +128,7 @@ export class Randomizer implements INodeType {
 								required: true,
 								default: '00',
 								options: MINUTE_OPTIONS,
-								description: 'Minute when the random window starts in the selected timezone.',
+								description: 'Minute when the random window starts in the selected timezone',
 							},
 							{
 								displayName: '2. Window End Hour',
@@ -158,23 +158,6 @@ export class Randomizer implements INodeType {
 								default: {},
 								options: [
 									{
-										displayName: 'Schedule Name',
-										name: 'name',
-										type: 'string',
-										default: '',
-										description:
-											'Friendly label included in emitted items. Defaults to Schedule N.',
-									},
-									{
-										displayName: 'Timezone',
-										name: 'timezone',
-										type: 'options',
-										default: 'UTC',
-										options: TIMEZONE_OPTIONS,
-										description:
-											'Timezone used to interpret the schedule window and recurrence rules.',
-									},
-									{
 										displayName: 'Minimum Spacing (Minutes)',
 										name: 'minimumSpacingMinutes',
 										type: 'number',
@@ -183,7 +166,7 @@ export class Randomizer implements INodeType {
 										},
 										default: 0,
 										description:
-											'Minimum number of minutes between random trigger fires in the same schedule window.',
+											'Minimum number of minutes between random trigger fires in the same schedule window',
 									},
 									{
 										displayName: 'Month Days',
@@ -196,7 +179,7 @@ export class Randomizer implements INodeType {
 											},
 										},
 										description:
-											'Comma-separated month days from 1 to 31, for example 1,15,28.',
+											'Comma-separated month days from 1 to 31, for example 1,15,28',
 									},
 									{
 										displayName: 'Periodicity',
@@ -219,7 +202,14 @@ export class Randomizer implements INodeType {
 											},
 										],
 										description:
-											'How often to create a fresh random schedule window in the selected timezone.',
+											'How often to create a fresh random schedule window in the selected timezone',
+									},
+									{
+										displayName: 'Schedule Name',
+										name: 'name',
+										type: 'string',
+										default: '',
+										description: 'Friendly label included in emitted items. Defaults to Schedule N.',
 									},
 									{
 										displayName: 'Times Per Window',
@@ -230,7 +220,16 @@ export class Randomizer implements INodeType {
 										},
 										default: 1,
 										description:
-											'How many random trigger fires to create inside each matching window.',
+											'How many random trigger fires to create inside each matching window',
+									},
+									{
+										displayName: 'Timezone',
+										name: 'timezone',
+										type: 'options',
+										default: 'UTC',
+										options: TIMEZONE_OPTIONS,
+										description:
+											'Timezone used to interpret the schedule window and recurrence rules',
 									},
 									{
 										displayName: 'Weekdays',
@@ -252,7 +251,7 @@ export class Randomizer implements INodeType {
 											{ name: 'Wednesday', value: 'wednesday' },
 										],
 										description:
-											'Weekdays in the selected timezone to use when Periodicity is Weekly.',
+											'Weekdays in the selected timezone to use when Periodicity is Weekly',
 									},
 								],
 							},
