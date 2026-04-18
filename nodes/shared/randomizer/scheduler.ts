@@ -7,6 +7,9 @@ const MINUTES_PER_DAY = 24 * 60;
 const MILLISECONDS_PER_MINUTE = 60 * 1000;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 const MAX_CATCH_UP_DAYS = 400;
+const DATE_PARTS_FORMATTER_CACHE = new Map<string, Intl.DateTimeFormat>();
+const DATE_TIME_PARTS_FORMATTER_CACHE = new Map<string, Intl.DateTimeFormat>();
+const OFFSET_FORMATTER_CACHE = new Map<string, Intl.DateTimeFormat>();
 
 export type RandomizerPeriodicity = 'daily' | 'weekly' | 'monthly';
 
@@ -24,6 +27,7 @@ export type RandomizerSchedule = {
 	readonly fingerprint: string;
 	readonly name: string;
 	readonly periodicity: RandomizerPeriodicity;
+	readonly timezone: string;
 	readonly windowStart: string;
 	readonly windowEnd: string;
 	readonly occurrences: number;
@@ -40,6 +44,7 @@ export type PendingOccurrence = {
 	readonly scheduleKey: string;
 	readonly scheduleName: string;
 	readonly periodicity: RandomizerPeriodicity;
+	readonly timezone: string;
 	readonly windowStart: string;
 	readonly windowEnd: string;
 	readonly windowDate: string;
@@ -210,7 +215,7 @@ const evaluateSchedule = (
 			return {
 				state: {
 					fingerprint: schedule.fingerprint,
-					lastGeneratedDate: toUtcDateString(now),
+					lastGeneratedDate: toTimeZoneDateString(now, schedule.timezone),
 					pending: remainingPending,
 				},
 				emitted,
@@ -223,7 +228,7 @@ const previewSchedule = (
 	schedule: RandomizerSchedule,
 	random: () => number,
 ): Effect.Effect<readonly PendingOccurrence[], RandomizerError> => {
-	const today = startOfUtcDay(now);
+	const today = toTimeZoneDateString(now, schedule.timezone);
 
 	return Effect.flatMap(
 		findNextWindowDate(now, schedule, today),
@@ -240,7 +245,9 @@ const generatePendingForDates = (
 	state: PersistedScheduleState | undefined,
 	random: () => number,
 ): Effect.Effect<readonly PendingOccurrence[], RandomizerError> =>
-	Effect.flatMap(listGenerationDates(state?.lastGeneratedDate, toUtcDateString(now)), (dates) =>
+	Effect.flatMap(
+		listGenerationDates(state?.lastGeneratedDate, toTimeZoneDateString(now, schedule.timezone)),
+		(dates) =>
 		Effect.flatMap(
 			Effect.forEach(
 				dates,
@@ -257,15 +264,14 @@ const generatePendingForDates = (
 const findNextWindowDate = (
 	now: Date,
 	schedule: RandomizerSchedule,
-	today: Date,
+	today: string,
 ): Effect.Effect<string | undefined, RandomizerError> => {
 	const loop = (offset: number): Effect.Effect<string | undefined, RandomizerError> => {
 		if (offset >= 366) {
 			return Effect.succeed(undefined);
 		}
 
-		const candidate = new Date(today.getTime() + offset * MILLISECONDS_PER_DAY);
-		const candidateDate = toUtcDateString(candidate);
+		const candidateDate = addDays(today, offset);
 
 		if (!isScheduleActiveOnDate(schedule, candidateDate)) {
 			return loop(offset + 1);
@@ -340,6 +346,7 @@ const generatePendingOccurrencesForDate = (
 								scheduleKey: schedule.key,
 								scheduleName: schedule.name,
 								periodicity: schedule.periodicity,
+								timezone: schedule.timezone,
 								windowStart: window.windowStart.toISOString(),
 								windowEnd: window.windowEnd.toISOString(),
 								windowDate,
@@ -360,23 +367,13 @@ const buildPlannedWindow = (
 					throw new Error('Window End must not be the same as Window Start');
 				}
 
-				const [year, month, day] = windowDate.split('-').map(Number);
 				const endDayOffset = endMinute < startMinute ? 1 : 0;
+				const endDate = addDays(windowDate, endDayOffset);
 
 				return {
 					windowDate,
-					windowStart: new Date(
-						Date.UTC(year, month - 1, day, Math.floor(startMinute / 60), startMinute % 60),
-					),
-					windowEnd: new Date(
-						Date.UTC(
-							year,
-							month - 1,
-							day + endDayOffset,
-							Math.floor(endMinute / 60),
-							endMinute % 60,
-						),
-					),
+					windowStart: zonedDateTimeToUtcDate(windowDate, startMinute, schedule.timezone),
+					windowEnd: zonedDateTimeToUtcDate(endDate, endMinute, schedule.timezone),
 				};
 			}),
 		),
@@ -460,7 +457,7 @@ const parseTimeToMinuteIndex = (
 		const match = /^([01]\d|2[0-3]):([0-5]\d)$/.exec(value);
 
 		if (match === null) {
-			throw new Error('Time values must use HH:mm in UTC');
+			throw new Error('Time values must use HH:mm');
 		}
 
 		return Number(match[1]) * 60 + Number(match[2]);
@@ -473,9 +470,6 @@ const parseUtcDateString = (value: string): Date => {
 
 	return new Date(Date.UTC(year, month - 1, day));
 };
-
-const startOfUtcDay = (date: Date): Date =>
-	new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
 
 const addDays = (date: string, days: number): string =>
 	toUtcDateString(new Date(parseUtcDateString(date).getTime() + days * MILLISECONDS_PER_DAY));
@@ -544,6 +538,7 @@ export const createScheduleFingerprint = (
 	JSON.stringify({
 		name: schedule.name,
 		periodicity: schedule.periodicity,
+		timezone: schedule.timezone,
 		windowStart: schedule.windowStart,
 		windowEnd: schedule.windowEnd,
 		occurrences: schedule.occurrences,
@@ -567,6 +562,8 @@ export const validateSchedule = (
 				),
 				() =>
 					tryRandomizerEffect(() => {
+						assertValidTimeZone(schedule.timezone);
+
 						if (schedule.name.trim().length === 0) {
 							throw new Error('Schedule Name is required');
 						}
@@ -618,3 +615,156 @@ const toRandomizerError = (message: string, cause?: unknown): RandomizerError =>
 	message,
 	cause,
 });
+
+const assertValidTimeZone = (timeZone: string): void => {
+	new Intl.DateTimeFormat('en-US', { timeZone }).format(new Date(0));
+};
+
+const getDateFormatter = (timeZone: string): Intl.DateTimeFormat => {
+	let formatter = DATE_PARTS_FORMATTER_CACHE.get(timeZone);
+
+	if (formatter === undefined) {
+		formatter = new Intl.DateTimeFormat('en-US', {
+			timeZone,
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+		});
+		DATE_PARTS_FORMATTER_CACHE.set(timeZone, formatter);
+	}
+
+	return formatter;
+};
+
+const getDateTimeFormatter = (timeZone: string): Intl.DateTimeFormat => {
+	let formatter = DATE_TIME_PARTS_FORMATTER_CACHE.get(timeZone);
+
+	if (formatter === undefined) {
+		formatter = new Intl.DateTimeFormat('en-US', {
+			timeZone,
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit',
+			hourCycle: 'h23',
+		});
+		DATE_TIME_PARTS_FORMATTER_CACHE.set(timeZone, formatter);
+	}
+
+	return formatter;
+};
+
+const getOffsetFormatter = (timeZone: string): Intl.DateTimeFormat => {
+	let formatter = OFFSET_FORMATTER_CACHE.get(timeZone);
+
+	if (formatter === undefined) {
+		formatter = new Intl.DateTimeFormat('en-US', {
+			timeZone,
+			timeZoneName: 'shortOffset',
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit',
+			hourCycle: 'h23',
+		});
+		OFFSET_FORMATTER_CACHE.set(timeZone, formatter);
+	}
+
+	return formatter;
+};
+
+const toTimeZoneDateString = (date: Date, timeZone: string): string => {
+	const parts = getFormatterParts(getDateFormatter(timeZone), date);
+
+	return `${parts.year}-${parts.month}-${parts.day}`;
+};
+
+const zonedDateTimeToUtcDate = (date: string, minuteIndex: number, timeZone: string): Date => {
+	const [year, month, day] = date.split('-').map(Number);
+	const hour = Math.floor(minuteIndex / 60);
+	const minute = minuteIndex % 60;
+	const desiredYear = String(year);
+	const desiredMonth = String(month).padStart(2, '0');
+	const desiredDay = String(day).padStart(2, '0');
+	const desiredHour = String(hour).padStart(2, '0');
+	const desiredMinute = String(minute).padStart(2, '0');
+	const naiveUtcMilliseconds = Date.UTC(year, month - 1, day, hour, minute);
+	let epochMilliseconds = naiveUtcMilliseconds;
+
+	for (let iteration = 0; iteration < 3; iteration++) {
+		const offsetMinutes = getTimeZoneOffsetMinutes(new Date(epochMilliseconds), timeZone);
+		const nextEpochMilliseconds =
+			naiveUtcMilliseconds - offsetMinutes * MILLISECONDS_PER_MINUTE;
+
+		if (nextEpochMilliseconds === epochMilliseconds) {
+			break;
+		}
+
+		epochMilliseconds = nextEpochMilliseconds;
+	}
+
+	const zonedDate = new Date(epochMilliseconds);
+	const parts = getFormatterParts(getDateTimeFormatter(timeZone), zonedDate);
+
+	if (
+		parts.year !== desiredYear ||
+		parts.month !== desiredMonth ||
+		parts.day !== desiredDay ||
+		parts.hour !== desiredHour ||
+		parts.minute !== desiredMinute
+	) {
+		throw new Error(`Time ${date} ${desiredHour}:${desiredMinute} is invalid in timezone ${timeZone}`);
+	}
+
+	return zonedDate;
+};
+
+const getTimeZoneOffsetMinutes = (date: Date, timeZone: string): number => {
+	const parts = getOffsetFormatter(timeZone).formatToParts(date);
+	const offsetPart = parts.find((part) => part.type === 'timeZoneName')?.value;
+
+	if (offsetPart === undefined || offsetPart === 'GMT') {
+		return 0;
+	}
+
+	const match = /^GMT([+-])(\d{1,2})(?::(\d{2}))?$/.exec(offsetPart);
+
+	if (match === null) {
+		throw new Error(`Unable to parse timezone offset for ${timeZone}`);
+	}
+
+	const sign = match[1] === '+' ? 1 : -1;
+	const hours = Number(match[2]);
+	const minutes = Number(match[3] ?? '0');
+
+	return sign * (hours * 60 + minutes);
+};
+
+const getFormatterParts = (
+	formatter: Intl.DateTimeFormat,
+	date: Date,
+): Record<'year' | 'month' | 'day' | 'hour' | 'minute', string> => {
+	const values = {
+		year: '0000',
+		month: '00',
+		day: '00',
+		hour: '00',
+		minute: '00',
+	};
+
+	for (const part of formatter.formatToParts(date)) {
+		if (
+			part.type === 'year' ||
+			part.type === 'month' ||
+			part.type === 'day' ||
+			part.type === 'hour' ||
+			part.type === 'minute'
+		) {
+			values[part.type] = part.value;
+		}
+	}
+
+	return values;
+};

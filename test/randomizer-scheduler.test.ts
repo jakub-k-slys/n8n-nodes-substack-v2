@@ -36,6 +36,7 @@ describe('randomizer scheduler', () => {
 			key: 'schedule-0',
 			name: 'Daily Window',
 			periodicity: 'daily',
+			timezone: 'UTC',
 			windowStart: '10:00',
 			windowEnd: '13:17',
 			occurrences: 3,
@@ -84,6 +85,7 @@ describe('randomizer scheduler', () => {
 			key: 'schedule-0',
 			name: 'Weekly Window',
 			periodicity: 'weekly',
+			timezone: 'UTC',
 			windowStart: '12:00',
 			windowEnd: '12:30',
 			occurrences: 1,
@@ -123,6 +125,7 @@ describe('randomizer scheduler', () => {
 			key: 'schedule-0',
 			name: 'Monthly Window',
 			periodicity: 'monthly',
+			timezone: 'UTC',
 			windowStart: '08:00',
 			windowEnd: '08:30',
 			occurrences: 1,
@@ -162,6 +165,7 @@ describe('randomizer scheduler', () => {
 			key: 'schedule-0',
 			name: 'Preview Window',
 			periodicity: 'daily',
+			timezone: 'UTC',
 			windowStart: '10:00',
 			windowEnd: '10:10',
 			occurrences: 2,
@@ -190,6 +194,7 @@ describe('randomizer scheduler', () => {
 				key: 'schedule-0',
 				name: 'Night Window',
 				periodicity: 'daily',
+				timezone: 'UTC',
 				windowStart: '22:47',
 				windowEnd: '02:39',
 				occurrences: 2,
@@ -230,6 +235,7 @@ describe('randomizer scheduler', () => {
 				key: 'schedule-0',
 				name: 'Night Preview',
 				periodicity: 'daily',
+				timezone: 'UTC',
 				windowStart: '22:47',
 				windowEnd: '02:39',
 				occurrences: 1,
@@ -251,6 +257,35 @@ describe('randomizer scheduler', () => {
 		assert.equal(preview[0]?.plannedAt, '2026-04-17T22:47:00.000Z');
 	});
 
+	it('should interpret window times in the configured timezone', () => {
+		const schedule = Effect.runSync(
+			validateSchedule({
+				key: 'schedule-0',
+				name: 'Warsaw Morning',
+				periodicity: 'daily',
+				timezone: 'Europe/Warsaw',
+				windowStart: '10:00',
+				windowEnd: '10:10',
+				occurrences: 1,
+				weekdays: [],
+				monthDays: [],
+				minimumSpacingMinutes: 0,
+			}),
+		);
+
+		const poll = runWithServices(
+			evaluateRandomizerSchedules([schedule], createEmptyRandomizerState()),
+			new Date('2026-01-15T09:00:00.000Z'),
+			fixedRandom(0),
+		);
+
+		assert.equal(poll.emitted.length, 1);
+		assert.equal(poll.emitted[0]?.plannedAt, '2026-01-15T09:00:00.000Z');
+		assert.equal(poll.emitted[0]?.windowStart, '2026-01-15T09:00:00.000Z');
+		assert.equal(poll.emitted[0]?.windowEnd, '2026-01-15T09:10:00.000Z');
+		assert.equal(poll.emitted[0]?.timezone, 'Europe/Warsaw');
+	});
+
 	it('should decode persisted randomizer state', () => {
 		const decoded = Effect.runSync(
 			decodeRandomizerState({
@@ -268,6 +303,7 @@ describe('randomizer scheduler', () => {
 								scheduleKey: 'schedule-0',
 								scheduleName: 'Daily Window',
 								periodicity: 'daily',
+								timezone: 'UTC',
 								windowStart: '2026-04-18T10:00:00.000Z',
 								windowEnd: '2026-04-18T13:17:00.000Z',
 								windowDate: '2026-04-18',

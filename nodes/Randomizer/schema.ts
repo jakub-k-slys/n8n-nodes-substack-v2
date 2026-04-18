@@ -3,7 +3,9 @@ import * as Schema from 'effect/Schema';
 export const RandomizerPeriodicitySchema = Schema.Literal('daily', 'weekly', 'monthly');
 
 export const RandomizerScheduleParametersSchema = Schema.Struct({
+	name: Schema.optional(Schema.String),
 	periodicity: Schema.optional(RandomizerPeriodicitySchema),
+	timezone: Schema.optional(Schema.String),
 	occurrences: Schema.optional(Schema.Number),
 	weekdays: Schema.optional(Schema.Array(Schema.String)),
 	monthDays: Schema.optional(Schema.String),
@@ -11,7 +13,6 @@ export const RandomizerScheduleParametersSchema = Schema.Struct({
 });
 
 export const RandomizerScheduleInputSchema = Schema.Struct({
-	name: Schema.optional(Schema.String),
 	windowStartHour: Schema.optional(Schema.String),
 	windowStartMinute: Schema.optional(Schema.String),
 	windowEndHour: Schema.optional(Schema.String),
@@ -31,6 +32,7 @@ export const PendingOccurrenceSchema = Schema.Struct({
 	scheduleKey: Schema.String,
 	scheduleName: Schema.String,
 	periodicity: RandomizerPeriodicitySchema,
+	timezone: Schema.String,
 	windowStart: Schema.String,
 	windowEnd: Schema.String,
 	windowDate: Schema.String,

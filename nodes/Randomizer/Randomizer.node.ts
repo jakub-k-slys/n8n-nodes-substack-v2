@@ -48,6 +48,22 @@ const MINUTE_OPTIONS = Array.from({ length: 60 }, (_, minute) => {
 		value,
 	};
 });
+const getSupportedTimeZones = (): string[] => {
+	const supportedValuesOf = (
+		Intl as typeof Intl & { supportedValuesOf?: (key: 'timeZone') => string[] }
+	).supportedValuesOf;
+
+	if (supportedValuesOf === undefined) {
+		return ['UTC'];
+	}
+
+	return ['UTC', ...supportedValuesOf('timeZone').filter((timeZone: string) => timeZone !== 'UTC')];
+};
+
+const TIMEZONE_OPTIONS = getSupportedTimeZones().map((timeZone) => ({
+		name: timeZone,
+		value: timeZone,
+	}));
 
 export class Randomizer implements INodeType {
 	description: INodeTypeDescription = {
@@ -61,13 +77,13 @@ export class Randomizer implements INodeType {
 		version: 1,
 		subtitle:
 			'={{(($parameter["schedules"]?.schedule ?? []).length || 0) + " schedule" + ((($parameter["schedules"]?.schedule ?? []).length || 0) === 1 ? "" : "s")}}',
-		description: 'Fire random UTC trigger events inside configured schedule windows',
+		description: 'Fire random trigger events inside configured schedule windows',
 		defaults: {
 			name: 'Randomizer',
 		},
-		eventTriggerDescription: 'Runs when one or more generated UTC random times become due',
+		eventTriggerDescription: 'Runs when one or more generated random times become due',
 		activationMessage:
-			'Your randomizer trigger will now create random UTC fire times based on the schedules you defined.',
+			'Your randomizer trigger will now create random fire times based on the schedules you defined.',
 		usableAsTool: true,
 		inputs: [],
 		outputs: [NodeConnectionTypes.Main],
@@ -84,18 +100,10 @@ export class Randomizer implements INodeType {
 				default: {
 					schedule: [
 						{
-							name: 'Morning Burst',
 							windowStartHour: '10',
 							windowStartMinute: '00',
 							windowEndHour: '13',
 							windowEndMinute: '17',
-							parameters: {
-								periodicity: 'daily',
-								occurrences: 3,
-								weekdays: [...defaultWeekdays],
-								monthDays: defaultMonthDays.join(','),
-								minimumSpacingMinutes: 0,
-							},
 						},
 					],
 				},
@@ -105,42 +113,42 @@ export class Randomizer implements INodeType {
 						displayName: 'Schedule',
 						values: [
 							{
-								displayName: '1. Window Start Hour (UTC)',
+								displayName: '1. Window Start Hour',
 								name: 'windowStartHour',
 								type: 'options',
 								required: true,
 								default: '10',
 								options: HOUR_OPTIONS,
-								description: 'UTC hour when the random window starts',
+								description: 'Hour when the random window starts in the selected timezone.',
 							},
 							{
-								displayName: '1. Window Start Minute (UTC)',
+								displayName: '1. Window Start Minute',
 								name: 'windowStartMinute',
 								type: 'options',
 								required: true,
 								default: '00',
 								options: MINUTE_OPTIONS,
-								description: 'UTC minute when the random window starts',
+								description: 'Minute when the random window starts in the selected timezone.',
 							},
 							{
-								displayName: '2. Window End Hour (UTC)',
+								displayName: '2. Window End Hour',
 								name: 'windowEndHour',
 								type: 'options',
 								required: true,
 								default: '13',
 								options: HOUR_OPTIONS,
 								description:
-									'UTC hour when the random window ends. If earlier than the start hour, the window ends on the next day.',
+									'Hour when the random window ends in the selected timezone. If earlier than the start hour, the window ends on the next day.',
 							},
 							{
-								displayName: '2. Window End Minute (UTC)',
+								displayName: '2. Window End Minute',
 								name: 'windowEndMinute',
 								type: 'options',
 								required: true,
 								default: '17',
 								options: MINUTE_OPTIONS,
 								description:
-									'UTC minute when the random window ends. If the end time is earlier than the start time, the window ends on the next day.',
+									'Minute when the random window ends in the selected timezone. If the end time is earlier than the start time, the window ends on the next day.',
 							},
 							{
 								displayName: 'Parameters',
@@ -150,6 +158,23 @@ export class Randomizer implements INodeType {
 								default: {},
 								options: [
 									{
+										displayName: 'Schedule Name',
+										name: 'name',
+										type: 'string',
+										default: '',
+										description:
+											'Friendly label included in emitted items. Defaults to Schedule N.',
+									},
+									{
+										displayName: 'Timezone',
+										name: 'timezone',
+										type: 'options',
+										default: 'UTC',
+										options: TIMEZONE_OPTIONS,
+										description:
+											'Timezone used to interpret the schedule window and recurrence rules.',
+									},
+									{
 										displayName: 'Minimum Spacing (Minutes)',
 										name: 'minimumSpacingMinutes',
 										type: 'number',
@@ -158,10 +183,10 @@ export class Randomizer implements INodeType {
 										},
 										default: 0,
 										description:
-											'Minimum number of minutes between random trigger fires in the same UTC window',
+											'Minimum number of minutes between random trigger fires in the same schedule window.',
 									},
 									{
-										displayName: 'Month Days (UTC)',
+										displayName: 'Month Days',
 										name: 'monthDays',
 										type: 'string',
 										default: defaultMonthDays.join(','),
@@ -171,7 +196,7 @@ export class Randomizer implements INodeType {
 											},
 										},
 										description:
-											'Comma-separated month days from 1 to 31, for example 1,15,28',
+											'Comma-separated month days from 1 to 31, for example 1,15,28.',
 									},
 									{
 										displayName: 'Periodicity',
@@ -193,7 +218,8 @@ export class Randomizer implements INodeType {
 												value: 'monthly',
 											},
 										],
-										description: 'How often to create a fresh random UTC schedule window',
+										description:
+											'How often to create a fresh random schedule window in the selected timezone.',
 									},
 									{
 										displayName: 'Times Per Window',
@@ -202,12 +228,12 @@ export class Randomizer implements INodeType {
 										typeOptions: {
 											minValue: 1,
 										},
-										default: 3,
+										default: 1,
 										description:
-											'How many random trigger fires to create inside each matching window',
+											'How many random trigger fires to create inside each matching window.',
 									},
 									{
-										displayName: 'Weekdays (UTC)',
+										displayName: 'Weekdays',
 										name: 'weekdays',
 										type: 'multiOptions',
 										default: [...defaultWeekdays],
@@ -225,23 +251,16 @@ export class Randomizer implements INodeType {
 											{ name: 'Tuesday', value: 'tuesday' },
 											{ name: 'Wednesday', value: 'wednesday' },
 										],
-										description: 'Weekdays to use when Periodicity is Weekly',
+										description:
+											'Weekdays in the selected timezone to use when Periodicity is Weekly.',
 									},
 								],
-							},
-							{
-								displayName: 'Schedule Name',
-								name: 'name',
-								type: 'string',
-								required: true,
-								default: 'Morning Burst',
-								description: 'Friendly label included in emitted items',
 							},
 						],
 					},
 				],
 				description:
-					'Create one or more UTC schedules. Windows may cross midnight. Manual execution previews only the next planned random fire time instead of waiting for it.',
+					'Create one or more schedules. Windows may cross midnight. Manual execution previews only the next planned random fire time instead of waiting for it.',
 			},
 		],
 	};
@@ -364,11 +383,12 @@ const getSchedules = (
 				Effect.flatMap(sanitizeWeekdays(schedule.parameters?.weekdays), (weekdays) =>
 					validateSchedule({
 						key: `schedule-${index}`,
-						name: String(schedule.name ?? '').trim(),
+						name: getScheduleName(schedule.parameters?.name, index),
 						periodicity: schedule.parameters?.periodicity ?? 'daily',
+						timezone: String(schedule.parameters?.timezone ?? 'UTC'),
 						windowStart: toUtcTimeString(schedule.windowStartHour, schedule.windowStartMinute),
 						windowEnd: toUtcTimeString(schedule.windowEndHour, schedule.windowEndMinute),
-						occurrences: Number(schedule.parameters?.occurrences ?? 3),
+						occurrences: Number(schedule.parameters?.occurrences ?? 1),
 						weekdays,
 						monthDays,
 						minimumSpacingMinutes: Number(schedule.parameters?.minimumSpacingMinutes ?? 0),
@@ -381,6 +401,12 @@ const getSchedules = (
 
 const toUtcTimeString = (hour: string | undefined, minute: string | undefined): string =>
 	`${String(hour ?? '').padStart(2, '0')}:${String(minute ?? '').padStart(2, '0')}`;
+
+const getScheduleName = (value: string | undefined, index: number): string => {
+	const trimmedValue = String(value ?? '').trim();
+
+	return trimmedValue.length > 0 ? trimmedValue : `Schedule ${index + 1}`;
+};
 
 const runRandomizerEffect = <A, R>(
 	context: ITriggerFunctions,
