@@ -16,7 +16,7 @@ Project guides:
 - [Architecture](design.md)
 - [Development](development.md)
 - [Testing](testing.md)
-- [Contributing](contributing.md)
+- [Contributing](../CONTRIBUTING.md)
 - [Changelog](changelog.md)
 
 Resource guides:

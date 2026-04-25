@@ -4,6 +4,11 @@
 
 It integrates n8n with a gateway-backed Substack API and currently supports own publication data, notes, drafts, posts, and profiles.
 
+> [!IMPORTANT]
+> This is an unofficial community node. It is not part of n8n and is not compatible with n8n Cloud-hosted instances, where custom community packages cannot be installed.
+>
+> To use this package, you need an n8n environment you control, such as a self-hosted deployment, Docker setup, VPS, Railway, or a similar hosting provider.
+
 ## Installation
 
 Install the package in the n8n instance where community nodes are enabled:
