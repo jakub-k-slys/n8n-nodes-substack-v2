@@ -42,6 +42,16 @@ The Substack nodes use the `Substack Gateway` credential with:
 - `Gateway URL`
 - `Gateway Token`
 
+## Gateway Compatibility
+
+Different Substack Gateway deployments may expose different features and operations.
+
+- some gateways may support only a subset of the documented actions
+- available resources and operations can vary between gateway instances
+- feed triggers and reaction actions such as `Like` / `Unlike` may depend on gateway-specific capability support
+
+If an operation does not appear in the node editor or fails with a gateway support error, check the capabilities of the specific Substack Gateway you configured.
+
 ## Resources
 
 Current resources and operations:
@@ -55,6 +65,8 @@ Current resources and operations:
   - `Create`
   - `Get`
   - `Delete`
+  - `Like`
+  - `Unlike`
 - `Draft`
   - `Create`
   - `Get`
@@ -64,10 +76,14 @@ Current resources and operations:
 - `Post`
   - `Get`
   - `Get Comments`
+  - `Like`
+  - `Unlike`
 - `Profile`
   - `Get`
   - `Get Notes`
   - `Get Posts`
+
+`Restack` operations are not currently exposed by the package.
 
 ## Quickstart
 

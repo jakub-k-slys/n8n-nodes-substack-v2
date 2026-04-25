@@ -18,6 +18,30 @@ Parameters:
 
 Returns the comments for a post.
 
+### `Like`
+
+Parameters:
+
+- `postId` number, required
+
+Returns:
+
+- `success`
+- `postId`
+- `liked`
+
+### `Unlike`
+
+Parameters:
+
+- `postId` number, required
+
+Returns:
+
+- `success`
+- `postId`
+- `liked`
+
 ## Output Fields
 
 - `id`
@@ -33,3 +57,5 @@ Returns the comments for a post.
 - optional `restacks`
 - optional `tags`
 - optional `coverImage`
+
+`restacks` is a read-only output field here. The package does not currently expose `Restack` or `Unrestack` operations.

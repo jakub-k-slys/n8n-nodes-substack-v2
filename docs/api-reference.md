@@ -22,6 +22,14 @@ Credential name: `substackGatewayApi`
 - `Gateway URL`
 - `Gateway Token`
 
+## Capability Variance
+
+The documented Substack resources and operations describe the package surface, but actual availability depends on the connected Substack Gateway deployment.
+
+- different gateways may expose different capabilities
+- some operations may be available only on certain gateways
+- the node editor may hide unsupported operations after capability discovery
+
 ## Gateway Resources And Operations
 
 ### Own Publication
@@ -36,6 +44,8 @@ Credential name: `substackGatewayApi`
 - `Create`
 - `Get`
 - `Delete`
+- `Like`
+- `Unlike`
 
 ### Draft
 
@@ -49,6 +59,8 @@ Credential name: `substackGatewayApi`
 
 - `Get`
 - `Get Comments`
+- `Like`
+- `Unlike`
 
 ### Profile
 
@@ -92,3 +104,5 @@ The package returns plain JSON items shaped by node-specific serializers. Common
 - comments: `id`, `body`, `isAdmin`
 - feed entries: normalized Atom feed entry fields
 - randomizer items: generated occurrence metadata and schedule context
+
+The package may return post `restacks` data when reading posts, but it does not currently expose `Restack` or `Unrestack` operations.

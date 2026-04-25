@@ -33,6 +33,8 @@ After installation, n8n should expose 4 nodes from this package:
 - `Substack Gateway Profile Feed`
 - `Randomizer`
 
+The installed package surface is fixed, but the Substack operations available at runtime can still vary depending on the specific Substack Gateway URL you configure.
+
 ## Local Development Setup
 
 Install dependencies:

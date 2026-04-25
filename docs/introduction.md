@@ -54,6 +54,16 @@ The shared n8n credential exposes:
 - `gatewayUrl`
 - `gatewayToken`
 
+## Gateway Variants
+
+Different Substack Gateway deployments may support different resources, operations, and trigger features.
+
+This means:
+
+- the exact action list can vary by configured gateway
+- some operations may be hidden in the editor when the gateway does not advertise support for them
+- some requests may fail if the connected gateway does not implement the selected capability
+
 ## Data Flow
 
 At runtime the `Substack Gateway` action node:

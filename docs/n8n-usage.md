@@ -13,6 +13,8 @@
 
 The three Substack nodes use the `substackGatewayApi` credential.
 
+Available Substack resources and operations can vary depending on the specific gateway configured in that credential.
+
 ## Node Roles
 
 - `Substack Gateway`
@@ -38,6 +40,8 @@ The three Substack nodes use the `substackGatewayApi` credential.
 - `createNote`
 - `getNote`
 - `deleteNote`
+- `likeNote`
+- `unlikeNote`
 
 ### Draft
 
@@ -51,6 +55,8 @@ The three Substack nodes use the `substackGatewayApi` credential.
 
 - `getPost`
 - `getPostComments`
+- `likePost`
+- `unlikePost`
 
 ### Profile
 
@@ -98,7 +104,7 @@ The three Substack nodes use the `substackGatewayApi` credential.
 - `attachment`
   - Optional for `createNote`
 - `noteId`
-  - Required for `getNote` and `deleteNote`
+  - Required for `getNote`, `deleteNote`, `likeNote`, and `unlikeNote`
 
 ### Draft Parameters
 
@@ -110,7 +116,7 @@ The three Substack nodes use the `substackGatewayApi` credential.
 ### Post Parameters
 
 - `postId`
-  - Required for `getPost` and `getPostComments`
+  - Required for `getPost`, `getPostComments`, `likePost`, and `unlikePost`
 
 ### Profile Parameters
 
@@ -139,6 +145,8 @@ Common shapes:
 - feed entry: `id`, `type`, `publishedAt`, `title`, `url`, plus normalized feed-specific fields
 - randomizer emission: schedule metadata plus the generated due occurrence timestamp
 
+`restacks` may be present in post payloads, but restacking is not currently an available action in the node.
+
 ## Error Handling
 
 The `Substack Gateway` action handlers return structured failures that the main node converts into n8n errors, unless `Continue On Fail` is enabled.
@@ -150,5 +158,6 @@ Common failure cases:
 - Empty `content` when creating a note
 - Invalid numeric IDs
 - Gateway-side request failures
+- Gateway does not support the selected operation or trigger capability
 - Invalid or empty profile feed user name
 - Invalid randomizer schedule configuration

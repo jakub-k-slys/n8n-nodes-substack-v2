@@ -32,6 +32,30 @@ Returns:
 - `success`
 - `noteId`
 
+### `Like`
+
+Parameters:
+
+- `noteId` number, required
+
+Returns:
+
+- `success`
+- `noteId`
+- `liked`
+
+### `Unlike`
+
+Parameters:
+
+- `noteId` number, required
+
+Returns:
+
+- `success`
+- `noteId`
+- `liked`
+
 ## Output Fields
 
 - `id`

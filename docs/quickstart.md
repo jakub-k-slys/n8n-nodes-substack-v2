@@ -24,6 +24,8 @@ In n8n, add one of the package nodes:
 - `Substack Gateway Profile Feed`
 - `Randomizer`
 
+Depending on the Substack Gateway you configured, some resources or operations may differ from the examples below.
+
 ## 4. Try The Main Action Node
 
 Use `Substack Gateway` with:
