@@ -50,7 +50,7 @@
 		"@cucumber/cucumber": "^12.7.0",
 		"@eslint/js": "^9.32.0",
 		"@n8n/node-cli": "*",
-		"eslint": "^9.32.0",
+		"eslint": "^10.3.0",
 		"n8n": "^2.14.2",
 		"prettier": "3.8.3",
 		"release-it": "^20.0.0",
